@@ -7,7 +7,14 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "buildui": "rmdir public & ng build --watch",
+    "install-all": "npm i --prefix ./functions & npm i",
+    "install-build-all": "npm run build --prefix ./functions & npm run build",
+    "ib-all": "npm run install-build-all",
+    "emulate": "firebase emulators:start --only functions,firestore,hosting",
+    "deploy": "npm run fbclear & firebase deploy --only hosting",
+    "deployall": "firebase deploy"
   },
   "private": true,
   "dependencies": {
@@ -15,13 +22,15 @@
     "@angular/common": "~8.2.14",
     "@angular/compiler": "~8.2.14",
     "@angular/core": "~8.2.14",
+    "@angular/fire": "^6.0.0-rc.1",
     "@angular/forms": "~8.2.14",
     "@angular/platform-browser": "~8.2.14",
     "@angular/platform-browser-dynamic": "~8.2.14",
     "@angular/router": "~8.2.14",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
-    "zone.js": "~0.9.1"
+    "zone.js": "~0.9.1",
+    "firebase": "^7.8.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.803.21",
@@ -42,6 +51,11 @@
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",
     "tslint": "~5.15.0",
-    "typescript": "~3.5.3"
+    "typescript": "~3.5.3",
+    "@angular-devkit/architect": "^0.900.0-0 || ^0.900.0",
+    "firebase-tools": "^7.12.1",
+    "fuzzy": "^0.1.3",
+    "inquirer": "^6.2.2",
+    "inquirer-autocomplete-prompt": "^1.0.1"
   }
 }

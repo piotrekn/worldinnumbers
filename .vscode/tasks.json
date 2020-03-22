@@ -1,0 +1,54 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Serve UI",
+      "type": "npm",
+      "script": "start"
+    },
+    {
+      "label": "Build UI",
+      "type": "npm",
+      "script": "buildui"
+    },
+    {
+      "label": "Build functions",
+      "type": "npm",
+      "script": "build --prefix ./functions -- -w"
+    },
+    {
+      "label": "Install and Build",
+      "type": "npm",
+      "script": "ib-all",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Emulate site",
+      "type": "npm",
+      "script": "emulate",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build, emulate",
+      "group": "build",
+      "problemMatcher": [],
+      "dependsOn": [
+        "Build functions",
+        "Build UI",
+        "Emulate site"
+        // "Serve UI"
+      ]
+    },
+    {
+      "label": "Deploy site",
+      "type": "npm",
+      "script": "deploy",
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}

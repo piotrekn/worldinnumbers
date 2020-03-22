@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "covid-numbers"
+  },
+  "targets": {
+    "covid-numbers": {
+      "hosting": {
+        "covid-numbers": [
+          "covid-numbers"
+        ]
+      }
+    }
+  }
+}

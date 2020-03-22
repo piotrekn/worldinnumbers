@@ -1,7 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
-/dist
+/public
 /tmp
 /out-tsc
 # Only exists if Bazel was run
@@ -44,3 +44,9 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# firebase files
+firestore-debug.log
+firebase-debug.log
+src/environments/firebase.config.prod.ts
+src/environments/firebase.config.ts
