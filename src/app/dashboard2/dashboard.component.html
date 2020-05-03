@@ -1,44 +1,85 @@
-<div class="card-container">
-  <mat-card>
-    <div class="mat-elevation-z8 margin-bottom-1rem">
-      <table id="main-table" mat-table matSort [dataSource]="matDataSource | async">
-        <ng-container matColumnDef="provinces">
-          <th mat-header-cell *matHeaderCellDef>Provinces</th>
-          <td mat-cell *matCellDef="let element">{{ element.provinces?.length }}</td>
-        </ng-container>
+<mat-grid-list cols="2" rowHeight="7:5">
+  <mat-grid-tile>
+    <mat-card>
+      <mat-form-field>
+        <mat-label>Select the chart</mat-label>
+        <mat-select [(value)]="selectChartType">
+          <mat-option>None</mat-option>
+          <mat-option value="0">Google</mat-option>
+          <mat-option value="1" default>ngx-charts</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-card>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <mat-grid-tile-header>
+      <h3>Chart</h3>
+    </mat-grid-tile-header>
+    <mat-card>
+      <div>
+        <google-chart
+          *ngIf="selectChartType == 0 && charts.google && charts.google.countries$ | async as google"
+          #chart
+          [title]="google.title"
+          [type]="google.type"
+          [data]="google.data"
+          [columnNames]="google.columnNames"
+          [options]="google.options"
+          [width]="google.width"
+          [height]="google.height"
+        >
+        </google-chart>
 
-        <ng-container matColumnDef="country">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Country</th>
-          <td mat-cell *matCellDef="let element">{{ element.country }}</td>
-        </ng-container>
+        <ngx-charts-line-chart
+          *ngIf="selectChartType == 1 && charts.ngx.countries$ | async as countries"
+          [scheme]="countries.colorScheme"
+          [timeline]="countries.timeline"
+          [results]="countries.multi"
+          [legend]="true"
+          [showXAxisLabel]="true"
+          [showYAxisLabel]="true"
+        >
+        </ngx-charts-line-chart>
+      </div>
+    </mat-card>
+  </mat-grid-tile>
+  <mat-grid-tile>
+    <mat-card>
+      <div class="mat-elevation-z8">
+        <table mat-table matSort [dataSource]="dataSource">
+          <ng-container matColumnDef="provinces">
+            <th mat-header-cell *matHeaderCellDef>Provinces</th>
+            <td mat-cell *matCellDef="let element">{{ element.provinces?.length }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="confirmed">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Confirmed</th>
-          <td mat-cell *matCellDef="let element">{{ element.confirmed }}</td>
-        </ng-container>
+          <ng-container matColumnDef="country">
+            <th mat-header-cell *matHeaderCellDef>Country</th>
+            <td mat-cell *matCellDef="let element">{{ element.country }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="deaths">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Deaths</th>
-          <td mat-cell *matCellDef="let element">{{ element.deaths }}</td>
-        </ng-container>
+          <ng-container matColumnDef="confirmed">
+            <th mat-header-cell *matHeaderCellDef>Confirmed</th>
+            <td mat-cell *matCellDef="let element">{{ element.confirmed }}</td>
+          </ng-container>
 
-        <ng-container matColumnDef="recovered">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>Recovered</th>
-          <td mat-cell *matCellDef="let element">{{ element.recovered }}</td>
-        </ng-container>
+          <ng-container matColumnDef="deaths">
+            <th mat-header-cell *matHeaderCellDef>Deaths</th>
+            <td mat-cell *matCellDef="let element">{{ element.deaths }}</td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-      </table>
-    </div>
+          <ng-container matColumnDef="recovered">
+            <th mat-header-cell *matHeaderCellDef>Recovered</th>
+            <td mat-cell *matCellDef="let element">{{ element.recovered }}</td>
+          </ng-container>
 
-    <mat-paginator
-      class="mat-elevation-z8 margin-bottom-1rem"
-      [pageSizeOptions]="[15, 30, 50]"
-      showFirstLastButtons
-    ></mat-paginator>
-  </mat-card>
-</div>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    </mat-card>
+  </mat-grid-tile>
+  <mat-grid-tile>4</mat-grid-tile>
+</mat-grid-list>
 
 <div class="card-container">
   <!-- <div class="card">

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { share, map, switchMap } from 'rxjs/operators';
@@ -6,7 +6,6 @@ import { TimeSeries } from '../data/time-series';
 import { Ng2ConverterService } from './ng2-converter.service';
 import { GoogleChart, NgxChart, SharedGroupStatistics, SharedStatistics } from './chart-types';
 import { TableRow, Row } from '../data-parser.service';
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,9 +13,6 @@ import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-  @ViewChild(MatSort, null) sort: MatSort;
-  @ViewChild(MatPaginator, null) paginator: MatPaginator;
-
   rawData: Observable<TimeSeries>;
   chart: Observable<any>;
 
@@ -24,7 +20,6 @@ export class DashboardComponent implements OnInit {
   selectiveChart: Observable<string>;
 
   dataSource: Observable<TableRow[]>;
-  matDataSource: Observable<MatTableDataSource<TableRow>>;
   displayedColumns: string[] = ['provinces', 'country', 'confirmed', 'deaths', 'recovered'];
 
   selectChartType = 1;
@@ -74,10 +69,11 @@ export class DashboardComponent implements OnInit {
         recovered: 0,
         deaths: 0,
       };
-      let entry = countryEntry[key] as number;
+
+      const entry = countryEntry[key];
       if (entry != null) {
         const count = row.results[row.results.length - 1].value;
-        entry += count;
+        countryEntry[key] = countryEntry[key] || 0 + count;
         if (row.province) {
           countryEntry.provinces[row.province] = countryEntry.provinces[row.province] || ({} as SharedStatistics);
           countryEntry.provinces[row.province][key] = count;
@@ -99,6 +95,7 @@ export class DashboardComponent implements OnInit {
         x.cssc.confirmed.forEach((y) => addToDictionary(y, countriesDict, 'confirmed'));
         x.cssc.deaths.forEach((y) => addToDictionary(y, countriesDict, 'deaths'));
         x.cssc.recovered.forEach((y) => addToDictionary(y, countriesDict, 'recovered'));
+
         return Object.entries(countriesDict).map(
           (dictEntry) =>
             ({
@@ -109,16 +106,6 @@ export class DashboardComponent implements OnInit {
               recovered: dictEntry[1].recovered,
             } as TableRow)
         );
-      })
-    );
-    this.matDataSource = this.dataSource.pipe(
-      map((x) => {
-        console.log(x);
-        const mat = new MatTableDataSource(x);
-        mat.sort = this.sort;
-        mat.paginator = this.paginator;
-        console.log(mat);
-        return mat;
       })
     );
     const countries = data.pipe(map((x) => this.converter.createGoogle(x, 'Confirmed cases')));

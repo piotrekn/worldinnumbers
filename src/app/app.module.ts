@@ -7,10 +7,21 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { MatToolbarModule, MatTableModule } from '@angular/material';
-import { ChartsModule } from 'ng2-charts';
+import {
+  MatToolbarModule,
+  MatTableModule,
+  MatSelectModule,
+  MatFormFieldModule,
+  MatSortModule,
+  MatGridListModule,
+  MatCardModule,
+  MatPaginatorModule,
+} from '@angular/material';
 import { GoogleChartsModule } from 'angular-google-charts';
 import { DataService } from './data.service';
+import { Ng2ConverterService } from './dashboard/ng2-converter.service';
+import { Papa } from 'ngx-papaparse';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 @NgModule({
   declarations: [AppComponent, DashboardComponent],
@@ -18,13 +29,19 @@ import { DataService } from './data.service';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    GoogleChartsModule.forRoot(),
+    GoogleChartsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     MatToolbarModule,
     MatTableModule,
-    ChartsModule,
+    MatCardModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatSelectModule,
+    MatGridListModule,
+    MatFormFieldModule,
+    NgxChartsModule,
   ],
-  providers: [DataService],
+  providers: [DataService, Ng2ConverterService, Papa],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

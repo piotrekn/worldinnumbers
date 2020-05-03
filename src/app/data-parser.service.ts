@@ -20,12 +20,13 @@ export class DataParserService {
   }
 
   parse(lines: string[]): any {
-    const csseData = lines;
+    const csseData = [...lines];
 
     const header = csseData.shift().split(',');
-    const days = header.slice(5, header.length).map((x) => new Date(Date.parse(x)));
+    const daysColumnIndex = 4;
+    const days = header.slice(daysColumnIndex, header.length).map((x) => new Date(Date.parse(x)));
 
-    const parseResult = this.papa.parse(csseData.join('\n'));
+    const parseResult = this.papa.parse(csseData.join('\n'), { header: false });
     const rows = (parseResult.data as string[][]).map(
       (x) =>
         ({
@@ -33,7 +34,7 @@ export class DataParserService {
           country: x[1],
           lat: +x[2],
           lang: +x[3],
-          results: x.slice(5, x.length).map(
+          results: x.slice(daysColumnIndex, x.length).map(
             (cell, i) =>
               ({
                 value: +cell,
@@ -42,7 +43,6 @@ export class DataParserService {
           ),
         } as Row)
     );
-    console.log(rows[0].results);
 
     return rows;
   }
@@ -59,4 +59,13 @@ export class Row {
 export class DailyResult {
   date: Date;
   value: number;
+}
+
+export class TableRow {
+  provinces?: string[];
+  // province: string;
+  country: string;
+  confirmed: number;
+  deaths: number;
+  recovered: number;
 }
