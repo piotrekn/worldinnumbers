@@ -1,4 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { NgxChart } from 'src/app/dashboard2/chart-types';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-chart-area',
@@ -7,7 +9,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class ChartAreaComponent implements OnInit {
   @Input() selectChartType: number;
-  @Input() countries: any;
+  @Input() countries: Observable<NgxChart>;
   constructor() {}
 
   ngOnInit() {}

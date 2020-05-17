@@ -1,12 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DataService } from '../data.service';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { share, map, switchMap } from 'rxjs/operators';
+import { share, map, switchMap, tap } from 'rxjs/operators';
 import { TimeSeries } from '../data/time-series';
 import { Ng2ConverterService } from './ng2-converter.service';
 import { GoogleChart, NgxChart, SharedGroupStatistics, SharedStatistics } from './chart-types';
 import { TableRow, Row } from '../data-parser.service';
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,10 +23,13 @@ export class DashboardComponent implements OnInit {
 
   selectedCountry = new BehaviorSubject<string>(undefined);
   selectiveChart: Observable<string>;
+  selectedDataType = 'Confirmed';
 
   dataSource: Observable<TableRow[]>;
   matDataSource: Observable<MatTableDataSource<TableRow>>;
-  displayedColumns: string[] = ['provinces', 'country', 'confirmed', 'deaths', 'recovered'];
+  selection = new SelectionModel<TableRow>(true, []);
+  displayedColumns: string[] = ['select', 'provinces', 'country', 'confirmed', 'deaths', 'recovered'];
+  selectedCountries$ = new BehaviorSubject<string[]>([]);
 
   selectChartType = 1;
   charts: {
@@ -43,6 +47,26 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     const data = this.dataService.get().pipe(share());
+    const selectedCountriesData = this.selectedCountries$.pipe(
+      switchMap((countries) =>
+        data.pipe(
+          map((timeSeries) => {
+            if (countries && countries.length === 0) {
+              return timeSeries;
+            }
+
+            return {
+              cssc: {
+                confirmed: timeSeries.cssc.confirmed.filter((c) => countries.includes(c.country)),
+                deaths: timeSeries.cssc.deaths.filter((c) => countries.includes(c.country)),
+                recovered: timeSeries.cssc.recovered.filter((c) => countries.includes(c.country)),
+              },
+            } as TimeSeries;
+          })
+        )
+      ),
+      share()
+    );
     const selectedCountryData = this.selectedCountry.asObservable().pipe(
       switchMap((countryName) =>
         data.pipe(
@@ -113,25 +137,33 @@ export class DashboardComponent implements OnInit {
     );
     this.matDataSource = this.dataSource.pipe(
       map((x) => {
-        console.log(x);
+        this.selection = new SelectionModel<TableRow>(true, []);
+        this.selection.changed.subscribe((event) =>
+          this.selectedCountries$.next(event.source.selected.map((row) => row.country))
+        );
         const mat = new MatTableDataSource(x);
         mat.sort = this.sort;
         mat.paginator = this.paginator;
         console.log(mat);
         return mat;
-      })
+      }),
+      share()
     );
-    const countries = data.pipe(map((x) => this.converter.createGoogle(x, 'Confirmed cases')));
-    const ngxCountries$ = data.pipe(map((x) => this.converter.mapNgxChart(x)));
+    const googleCountries = data.pipe(map((x) => this.converter.createGoogle(x, 'Confirmed cases')));
+    const ngxCountries$ = selectedCountriesData.pipe(
+      map((x) => this.converter.mapNgxChart(x))
+      // for log scale add yAxisTickFormatting Math.pow as well
+      // tap((x) => x.multi.forEach((m) => m.series.forEach((s) => s.value === Math.log10(s.value)))),
+    );
 
     const googleCountryChart$ = selectedCountryData.pipe(
       map((x) => this.converter.createGoogle(x.data, `Confirmed cases in ${x.countryName}`))
     );
-    const ngxCountryChart$ = selectedCountryData.pipe(map((x) => this.converter.mapNgxChart(x.data)));
+    const ngxCountryChart$ = selectedCountriesData.pipe(map((x) => this.converter.mapNgxChart(x)));
 
     this.charts = {
       google: {
-        countries$: countries,
+        countries$: googleCountries,
         googleCountryChart$,
       },
       ngx: {
@@ -139,5 +171,31 @@ export class DashboardComponent implements OnInit {
         ngxCountryChart$,
       },
     };
+  }
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected(dataSource: MatTableDataSource<TableRow>) {
+    const numSelected = this.selection.selected.length;
+    const numRows = dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle(dataSource: MatTableDataSource<TableRow>) {
+    this.isAllSelected(dataSource)
+      ? this.selection.clear()
+      : dataSource.data.forEach((row) => this.selection.select(row));
+  }
+
+  /** The label for the checkbox on the passed row */
+  checkboxLabel(dataSource: MatTableDataSource<TableRow>, row?: TableRow): string {
+    if (!row) {
+      return `${this.isAllSelected(dataSource) ? 'select' : 'deselect'} all`;
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.country}`;
+  }
+
+  applyFilter(dataSource: MatTableDataSource<TableRow>, event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    dataSource.filter = filterValue.trim().toLowerCase();
   }
 }

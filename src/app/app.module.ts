@@ -17,6 +17,8 @@ import {
   MatCardModule,
   MatPaginatorModule,
   MatTabsModule,
+  MatCheckboxModule,
+  MatInputModule,
 } from '@angular/material';
 import { GoogleChartsModule } from 'angular-google-charts';
 import { DataService } from './data.service';
@@ -33,9 +35,11 @@ import { ChartAreaComponent } from './dashboard/chart-area/chart-area.component'
     BrowserAnimationsModule,
     GoogleChartsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
+    MatInputModule,
     MatToolbarModule,
     MatTableModule,
     MatCardModule,
+    MatCheckboxModule,
     MatSortModule,
     MatPaginatorModule,
     MatTabsModule,

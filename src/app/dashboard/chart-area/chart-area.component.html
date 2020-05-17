@@ -1,5 +1,5 @@
-<div *ngIf="countries; else noData">
-  <div [ngSwitch]="selectChartType">
+<div *ngIf="countries | async as countries; else noData">
+  <div class="chart-container" [ngSwitch]="selectChartType">
     <ngx-charts-area-chart-stacked
       *ngSwitchCase="2"
       [view]="countries.view"
@@ -18,7 +18,15 @@
     </ngx-charts-area-chart-stacked>
     <ngx-charts-line-chart
       *ngSwitchCase="1"
+      [view]="countries.view"
       [scheme]="countries.colorScheme"
+      [legend]="countries.legend"
+      [showXAxisLabel]="countries.showXAxisLabel"
+      [showYAxisLabel]="countries.showYAxisLabel"
+      [xAxis]="countries.xAxis"
+      [yAxis]="countries.yAxis"
+      [xAxisLabel]="countries.xAxisLabel"
+      [yAxisLabel]="countries.yAxisLabel"
       [timeline]="countries.timeline"
       [results]="countries.multi"
     >
