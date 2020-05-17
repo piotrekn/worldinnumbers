@@ -41,100 +41,27 @@
 </div>
 
 <div class="card-container">
-  <!-- <div class="card">
+  <div class="card">
     <mat-form-field>
-      <mat-label>Select the chart</mat-label>
+      <mat-label>Change the chart type here</mat-label>
       <mat-select [(value)]="selectChartType">
         <mat-option>None</mat-option>
-        <mat-option value="0" default>Google</mat-option>
-        <mat-option value="1">ngx-charts</mat-option>
+        <mat-option value="1">Line chart</mat-option>
+        <mat-option value="2" default>Stacked chart</mat-option>
       </mat-select>
     </mat-form-field>
-  </div> -->
-
-  <!-- <div *ngIf="selectChartType == 0 && charts.google && charts.google.countries$ | async as google">
-    <google-chart
-      #chart
-      [title]="google.title"
-      [type]="google.type"
-      [data]="google.data"
-      [columnNames]="google.columnNames"
-      [options]="google.options"
-      [width]="google.width"
-      [height]="google.height"
-      >s
-    </google-chart>
+    <mat-tab-group>
+      <mat-tab label="Confirmed">
+        <ng-template matTabContent>
+          <app-chart-area
+            *ngIf="charts.ngx.countries$ | async as countries"
+            [selectChartType]="selectChartType"
+            [countries]="countries"
+          ></app-chart-area>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="Deaths"> </mat-tab>
+      <mat-tab label="Recovered"> </mat-tab>
+    </mat-tab-group>
   </div>
-
-  <ngx-charts-line-chart
-  *ngIf="selectChartType == 1 && charts.ngx.countries$ | async as countries"
-  [scheme]="countries.colorScheme"
-  [timeline]="countries.timeline"
-  [results]="countries.multi"
->
-</ngx-charts-line-chart> -->
-  <!-- <ngx-charts-area-chart-stacked
-  *ngIf="selectChartType == 2 && charts.ngx.countries$ | async as countries"
-  [view]="countries.view"
-  [scheme]="countries.colorScheme"
-  [legend]="countries.legend"
-  [showXAxisLabel]="countries.showXAxisLabel"
-  [showYAxisLabel]="countries.showYAxisLabel"
-  [xAxis]="countries.xAxis"
-  [yAxis]="countries.yAxis"
-  [xAxisLabel]="countries.xAxisLabel"
-  [yAxisLabel]="countries.yAxisLabel"
-  [timeline]="countries.timeline"
-  [results]="countries.multi"
-  (select)="countries.onSelect($event)"
->
-</ngx-charts-area-chart-stacked> -->
-  <!-- <ngx-charts-area-chart-stacked
-  *ngIf="selectChartType == 2 && charts.ngx.countries$ | async as countries"
-  [scheme]="countries.colorScheme"
-  [timeline]="countries.timeline"
-  [results]="countries.multi"
->
-</ngx-charts-area-chart-stacked> -->
-  <!-- <div class="card">
-    <ngx-charts-line-chart
-      *ngIf="selectChartType == 1 && charts.ngx.countries$ | async as countries"
-      [scheme]="countries.colorScheme"
-      [timeline]="countries.timeline"
-      [results]="countries.multi"
-    >
-    </ngx-charts-line-chart>
-  </div> -->
-
-  <!-- <div class="card mat-elevation-z8">
-    <table mat-table matSort [dataSource]="dataSource">
-      <ng-container matColumnDef="provinces">
-        <th mat-header-cell *matHeaderCellDef>Provinces</th>
-        <td mat-cell *matCellDef="let element">{{ element.provinces?.length }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="country">
-        <th mat-header-cell *matHeaderCellDef>Country</th>
-        <td mat-cell *matCellDef="let element">{{ element.country }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="confirmed">
-        <th mat-header-cell *matHeaderCellDef>Confirmed</th>
-        <td mat-cell *matCellDef="let element">{{ element.confirmed }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="deaths">
-        <th mat-header-cell *matHeaderCellDef>Deaths</th>
-        <td mat-cell *matCellDef="let element">{{ element.deaths }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="recovered">
-        <th mat-header-cell *matHeaderCellDef>Recovered</th>
-        <td mat-cell *matCellDef="let element">{{ element.recovered }}</td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
-  </div> -->
 </div>

@@ -16,15 +16,17 @@ import {
   MatGridListModule,
   MatCardModule,
   MatPaginatorModule,
+  MatTabsModule,
 } from '@angular/material';
 import { GoogleChartsModule } from 'angular-google-charts';
 import { DataService } from './data.service';
 import { Ng2ConverterService } from './dashboard/ng2-converter.service';
 import { Papa } from 'ngx-papaparse';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { ChartAreaComponent } from './dashboard/chart-area/chart-area.component';
 
 @NgModule({
-  declarations: [AppComponent, DashboardComponent],
+  declarations: [AppComponent, DashboardComponent, ChartAreaComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -36,6 +38,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     MatCardModule,
     MatSortModule,
     MatPaginatorModule,
+    MatTabsModule,
     MatSelectModule,
     MatGridListModule,
     MatFormFieldModule,

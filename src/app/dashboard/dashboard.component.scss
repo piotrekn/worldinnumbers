@@ -1,3 +1,15 @@
 table#main-table {
   width: 100%;
 }
+.mat-header-cell,
+.mat-paginator,
+.mat-cell {
+  font-size: 0.625rem;
+}
+tr.mat-header-row {
+  height: 2rem;
+}
+tr.mat-footer-row,
+tr.mat-row {
+  height: 1.25rem;
+}
