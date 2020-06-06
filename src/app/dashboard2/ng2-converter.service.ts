@@ -12,30 +12,6 @@ export class Ng2ConverterService {
     return label ? `${label} - ${regionName}` : regionName;
   }
 
-  createGoogle(timeSeries: TimeSeries, title: string): GoogleChart {
-    const rawData = this.mapGoogleData(timeSeries.cssc.confirmed);
-    return {
-      title,
-      type: 'LineChart',
-      data: rawData.values,
-      columnNames: rawData.columns,
-      options: {},
-      width: 550,
-      height: 400,
-    };
-  }
-
-  mapGoogleData(row: Row[]): { columns: string[]; values: (string | number)[][] } {
-    const columns = ['Date'].concat(row.map((x) => this.mapColumnName(x)));
-    const values = row.map((x) => x.results.map((r) => r.value) as (string | number)[]);
-    const dates = row[0].results.map((x) => x.date.toDateString()) as (string | number)[];
-
-    const inputData = [dates].concat(values);
-    const transposed = this.transpose(inputData);
-
-    return { columns, values: transposed };
-  }
-
   transpose(array: (string | number)[][]) {
     return array[0].map((col, i) => array.map((row) => row[i]));
   }

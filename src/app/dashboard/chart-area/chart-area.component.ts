@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { NgxChart, NgxValue } from 'src/app/dashboard2/chart-types';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, tap, shareReplay } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-chart-area',

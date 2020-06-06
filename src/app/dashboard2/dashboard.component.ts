@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { share, map, switchMap } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import { TimeSeries } from '../data/time-series';
 import { Ng2ConverterService } from './ng2-converter.service';
-import { GoogleChart, NgxChart, SharedGroupStatistics, SharedStatistics, NgxValue } from './chart-types';
+import { NgxChart, SharedGroupStatistics, SharedStatistics, NgxValue } from './chart-types';
 import { TableRow, Row } from '../data-parser.service';
 
 @Component({
@@ -24,11 +24,7 @@ export class DashboardComponent implements OnInit {
 
   selectChartType = 1;
   charts: {
-    google: {
-      countries$: Observable<GoogleChart>;
-      googleCountryChart$: Observable<GoogleChart>;
-    };
-    ngx: {
+    ngx?: {
       countries$: Observable<NgxChart<NgxValue>>;
     };
   };
@@ -36,24 +32,7 @@ export class DashboardComponent implements OnInit {
   constructor(private dataService: DataService, private converter: Ng2ConverterService) {}
 
   ngOnInit() {
-    const data = this.dataService.get().pipe(share());
-    const selectedCountryData = this.selectedCountry.asObservable().pipe(
-      switchMap((countryName) =>
-        data.pipe(
-          map((timeSeries) => ({
-            countryName,
-            data: {
-              cssc: {
-                confirmed: timeSeries.cssc.confirmed.filter((c) => c.country === countryName),
-                deaths: timeSeries.cssc.deaths.filter((c) => c.country === countryName),
-                recovered: timeSeries.cssc.recovered.filter((c) => c.country === countryName),
-              },
-            } as TimeSeries,
-          }))
-        )
-      ),
-      share()
-    );
+    const data = this.dataService.get().pipe(shareReplay(1));
     const addToDictionary = (
       row: Row,
       dictionary: {
@@ -107,20 +86,10 @@ export class DashboardComponent implements OnInit {
         );
       })
     );
-    const countries = data.pipe(map((x) => this.converter.createGoogle(x, 'Confirmed cases')));
-    const ngxCountries$ = data.pipe(map((x) => this.converter.mapNgxChart(x)));
-
-    const googleCountryChart$ = selectedCountryData.pipe(
-      map((x) => this.converter.createGoogle(x.data, `Confirmed cases in ${x.countryName}`))
-    );
 
     this.charts = {
-      google: {
-        countries$: countries,
-        googleCountryChart$,
-      },
       ngx: {
-        countries$: ngxCountries$,
+        countries$: data.pipe(map((x) => this.converter.mapNgxChart(x))),
       },
     };
   }

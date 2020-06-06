@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DataService } from '../data.service';
 import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
-import { map, switchMap, tap, bufferTime, filter, shareReplay } from 'rxjs/operators';
+import { map, tap, bufferTime, filter, shareReplay } from 'rxjs/operators';
 import { TimeSeries } from '../data/time-series';
 import { Ng2ConverterService } from './ng2-converter.service';
-import { GoogleChart, NgxChart, SharedGroupStatistics, SharedStatistics } from './chart-types';
+import { NgxChart, SharedGroupStatistics, SharedStatistics } from './chart-types';
 import { TableRow, Row } from '../data-parser.service';
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -34,11 +34,7 @@ export class DashboardComponent implements OnInit {
 
   selectChartType = 1;
   charts: {
-    google: {
-      countries$: Observable<GoogleChart>;
-      googleCountryChart$: Observable<GoogleChart>;
-    };
-    ngx: {
+    ngx?: {
       countries$: Observable<NgxChart[]>;
     };
   };
@@ -68,23 +64,6 @@ export class DashboardComponent implements OnInit {
       shareReplay(1)
     );
 
-    const selectedCountryData = this.selectedCountry.asObservable().pipe(
-      switchMap((countryName) =>
-        data.pipe(
-          map((timeSeries) => ({
-            countryName,
-            data: {
-              cssc: {
-                confirmed: timeSeries.cssc.confirmed.filter((c) => c.country === countryName),
-                deaths: timeSeries.cssc.deaths.filter((c) => c.country === countryName),
-                recovered: timeSeries.cssc.recovered.filter((c) => c.country === countryName),
-              },
-            } as TimeSeries,
-          }))
-        )
-      ),
-      shareReplay(1)
-    );
     const addToDictionary = (
       row: Row,
       dictionary: {
@@ -166,7 +145,7 @@ export class DashboardComponent implements OnInit {
       }),
       shareReplay(1)
     );
-    const googleCountries = data.pipe(map((x) => this.converter.createGoogle(x, 'Confirmed cases')));
+
     const ngxCountries$ = selectedCountriesData.pipe(
       map((x) => (x == null ? undefined : this.converter.mapNgxChart(x))),
       shareReplay(1)
@@ -174,15 +153,7 @@ export class DashboardComponent implements OnInit {
       // tap((x) => x.multi.forEach((m) => m.series.forEach((s) => s.value === Math.log10(s.value)))),
     );
 
-    const googleCountryChart$ = selectedCountryData.pipe(
-      map((x) => this.converter.createGoogle(x.data, `Confirmed cases in ${x.countryName}`))
-    );
-
     this.charts = {
-      google: {
-        countries$: googleCountries,
-        googleCountryChart$,
-      },
       ngx: {
         countries$: ngxCountries$,
       },
