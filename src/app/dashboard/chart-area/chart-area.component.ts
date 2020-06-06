@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { NgxChart, NgxValue } from 'src/app/dashboard2/chart-types';
+import { NgxChart, NgxValue } from 'src/app/dashboard/chart-types';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 

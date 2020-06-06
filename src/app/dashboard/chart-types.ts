@@ -8,8 +8,8 @@ export interface GoogleChart {
   height: number;
 }
 
-export interface NgxChart {
-  multi: any[];
+export interface NgxChart<T> {
+  multi: T[];
   view: any[];
 
   // options
@@ -26,6 +26,14 @@ export interface NgxChart {
   colorScheme: {
     domain: string[];
   };
+}
+
+export interface NgxValue {
+  name: string;
+  series: {
+    name: string;
+    value: number;
+  }[];
 }
 
 export interface SharedStatistics {

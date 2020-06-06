@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
 import { map, tap, bufferTime, filter, shareReplay } from 'rxjs/operators';
 import { TimeSeries } from '../data/time-series';
 import { Ng2ConverterService } from './ng2-converter.service';
-import { NgxChart, SharedGroupStatistics, SharedStatistics } from './chart-types';
+import { NgxChart, SharedGroupStatistics, SharedStatistics, NgxValue } from './chart-types';
 import { TableRow, Row } from '../data-parser.service';
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -35,7 +35,7 @@ export class DashboardComponent implements OnInit {
   selectChartType = 1;
   charts: {
     ngx?: {
-      countries$: Observable<NgxChart[]>;
+      countries$: Observable<NgxChart<NgxValue>[]>;
     };
   };
 
