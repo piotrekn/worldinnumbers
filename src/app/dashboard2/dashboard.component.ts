@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { share, map, switchMap } from 'rxjs/operators';
 import { TimeSeries } from '../data/time-series';
 import { Ng2ConverterService } from './ng2-converter.service';
-import { GoogleChart, NgxChart, SharedGroupStatistics, SharedStatistics } from './chart-types';
+import { GoogleChart, NgxChart, SharedGroupStatistics, SharedStatistics, NgxValue } from './chart-types';
 import { TableRow, Row } from '../data-parser.service';
 
 @Component({
@@ -29,8 +29,7 @@ export class DashboardComponent implements OnInit {
       googleCountryChart$: Observable<GoogleChart>;
     };
     ngx: {
-      countries$: Observable<NgxChart>;
-      ngxCountryChart$: Observable<NgxChart>;
+      countries$: Observable<NgxChart<NgxValue>>;
     };
   };
 
@@ -114,7 +113,6 @@ export class DashboardComponent implements OnInit {
     const googleCountryChart$ = selectedCountryData.pipe(
       map((x) => this.converter.createGoogle(x.data, `Confirmed cases in ${x.countryName}`))
     );
-    const ngxCountryChart$ = selectedCountryData.pipe(map((x) => this.converter.mapNgxChart(x.data)));
 
     this.charts = {
       google: {
@@ -123,7 +121,6 @@ export class DashboardComponent implements OnInit {
       },
       ngx: {
         countries$: ngxCountries$,
-        ngxCountryChart$,
       },
     };
   }

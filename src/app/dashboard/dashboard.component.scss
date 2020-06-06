@@ -17,3 +17,13 @@ tr.mat-row {
 .main-card.card-container {
   margin: 1rem;
 }
+
+#data-parameters {
+  @media only screen and (min-width: 884px) {
+    position: absolute;
+  }
+}
+
+.table-container {
+  height: 332px;
+}

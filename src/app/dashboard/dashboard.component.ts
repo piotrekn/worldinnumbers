@@ -1,13 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DataService } from '../data.service';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { share, map, switchMap, tap } from 'rxjs/operators';
+import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
+import { map, switchMap, tap, bufferTime, filter, shareReplay } from 'rxjs/operators';
 import { TimeSeries } from '../data/time-series';
 import { Ng2ConverterService } from './ng2-converter.service';
 import { GoogleChart, NgxChart, SharedGroupStatistics, SharedStatistics } from './chart-types';
 import { TableRow, Row } from '../data-parser.service';
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
+import { Entity, EMPTY_ENTITY } from '../shared/dictionary';
 
 @Component({
   selector: 'app-dashboard',
@@ -23,13 +24,13 @@ export class DashboardComponent implements OnInit {
 
   selectedCountry = new BehaviorSubject<string>(undefined);
   selectiveChart: Observable<string>;
-  selectedDataType = 'Confirmed';
+  selectedDataType = 0;
 
   dataSource: Observable<TableRow[]>;
   matDataSource: Observable<MatTableDataSource<TableRow>>;
   selection = new SelectionModel<TableRow>(true, []);
   displayedColumns: string[] = ['select', 'provinces', 'country', 'confirmed', 'deaths', 'recovered'];
-  selectedCountries$ = new BehaviorSubject<string[]>([]);
+  selectedCountries$ = new BehaviorSubject<Entity<string>>(EMPTY_ENTITY());
 
   selectChartType = 1;
   charts: {
@@ -38,35 +39,35 @@ export class DashboardComponent implements OnInit {
       googleCountryChart$: Observable<GoogleChart>;
     };
     ngx: {
-      countries$: Observable<NgxChart>;
-      ngxCountryChart$: Observable<NgxChart>;
+      countries$: Observable<NgxChart[]>;
     };
   };
 
   constructor(private dataService: DataService, private converter: Ng2ConverterService) {}
 
   ngOnInit() {
-    const data = this.dataService.get().pipe(share());
-    const selectedCountriesData = this.selectedCountries$.pipe(
-      switchMap((countries) =>
-        data.pipe(
-          map((timeSeries) => {
-            if (countries && countries.length === 0) {
-              return timeSeries;
-            }
+    const data = this.dataService.get().pipe(shareReplay(1));
+    const selectedCountriesData = combineLatest([this.selectedCountries$, data]).pipe(
+      map((x) => {
+        const [selectedCountries, timeSeries] = x;
+        if (selectedCountries && selectedCountries.keys.length === 0) {
+          return null;
+        }
+        const rowPredicate = (row: Row) => {
+          return selectedCountries.dictionary[row.country];
+        };
 
-            return {
-              cssc: {
-                confirmed: timeSeries.cssc.confirmed.filter((c) => countries.includes(c.country)),
-                deaths: timeSeries.cssc.deaths.filter((c) => countries.includes(c.country)),
-                recovered: timeSeries.cssc.recovered.filter((c) => countries.includes(c.country)),
-              },
-            } as TimeSeries;
-          })
-        )
-      ),
-      share()
+        return {
+          cssc: {
+            confirmed: timeSeries.cssc.confirmed.filter(rowPredicate),
+            deaths: timeSeries.cssc.deaths.filter(rowPredicate),
+            recovered: timeSeries.cssc.recovered.filter(rowPredicate),
+          },
+        } as TimeSeries;
+      }),
+      shareReplay(1)
     );
+
     const selectedCountryData = this.selectedCountry.asObservable().pipe(
       switchMap((countryName) =>
         data.pipe(
@@ -82,7 +83,7 @@ export class DashboardComponent implements OnInit {
           }))
         )
       ),
-      share()
+      shareReplay(1)
     );
     const addToDictionary = (
       row: Row,
@@ -138,20 +139,37 @@ export class DashboardComponent implements OnInit {
     this.matDataSource = this.dataSource.pipe(
       map((x) => {
         this.selection = new SelectionModel<TableRow>(true, []);
-        this.selection.changed.subscribe((event) =>
-          this.selectedCountries$.next(event.source.selected.map((row) => row.country))
-        );
+
+        // todo should not be subscribed like this
+        this.selection.changed
+          .pipe(
+            bufferTime(1),
+            filter((events) => events && events.length > 0),
+            tap((events) => {
+              const entity = { dictionary: {}, keys: events[0].source.selected.map((row) => row.country) } as Entity<
+                string
+              >;
+              entity.dictionary = entity.keys.reduce((p, c) => {
+                p[c] = true;
+                return p;
+              }, {});
+              this.selectedCountries$.next(entity);
+            })
+          )
+          .subscribe();
+
         const mat = new MatTableDataSource(x);
+
         mat.sort = this.sort;
         mat.paginator = this.paginator;
-        console.log(mat);
         return mat;
       }),
-      share()
+      shareReplay(1)
     );
     const googleCountries = data.pipe(map((x) => this.converter.createGoogle(x, 'Confirmed cases')));
     const ngxCountries$ = selectedCountriesData.pipe(
-      map((x) => this.converter.mapNgxChart(x))
+      map((x) => (x == null ? undefined : this.converter.mapNgxChart(x))),
+      shareReplay(1)
       // for log scale add yAxisTickFormatting Math.pow as well
       // tap((x) => x.multi.forEach((m) => m.series.forEach((s) => s.value === Math.log10(s.value)))),
     );
@@ -159,7 +177,6 @@ export class DashboardComponent implements OnInit {
     const googleCountryChart$ = selectedCountryData.pipe(
       map((x) => this.converter.createGoogle(x.data, `Confirmed cases in ${x.countryName}`))
     );
-    const ngxCountryChart$ = selectedCountriesData.pipe(map((x) => this.converter.mapNgxChart(x)));
 
     this.charts = {
       google: {
@@ -168,7 +185,6 @@ export class DashboardComponent implements OnInit {
       },
       ngx: {
         countries$: ngxCountries$,
-        ngxCountryChart$,
       },
     };
   }

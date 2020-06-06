@@ -6,5 +6,4 @@ export const firebaseConfig: {
   storageBucket: string;
   messagingSenderId: string;
   appId: string;
-  measurementId: string;
 } = undefined;

@@ -27,7 +27,6 @@ describe('Ng2ConverterService', () => {
       { results, country: 'Country', province: 'DeathsProvince' },
       { results, country: 'Country', province: 'RecoveredProvince' },
     ] as Row[]);
-    console.log(mapped);
     expect(mapped && mapped.values).toBeTruthy();
     expect(mapped.values && mapped.columns).toBeTruthy();
     expect(mapped.values[1][1]).toBe(5);
@@ -56,7 +55,8 @@ describe('Ng2ConverterService', () => {
 
   it('should map lines to NgxChart', () => {
     const data = service.mapNgxChart(TestBed.get(DataParserService).parseAll(TIME_SERIES));
-    expect(data.multi.length).toBeGreaterThan(0);
+    expect(data.length).toBeGreaterThan(3);
+    data.forEach((s) => expect(s.multi.length).toBeGreaterThan(0));
   });
 
   it('should transpose', () => {

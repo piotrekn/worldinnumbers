@@ -5,8 +5,6 @@ import { GoogleChart, NgxChart } from './chart-types';
 
 @Injectable()
 export class Ng2ConverterService {
-  constructor() {}
-
   mapColumnName(row: Row, label?: string): string {
     const regionName = row.province ? `${row.country}, ${row.province}` : row.country;
     return label ? `${label} - ${regionName}` : regionName;
@@ -40,20 +38,26 @@ export class Ng2ConverterService {
     return array[0].map((col, i) => array.map((row) => row[i]));
   }
 
-  mapNgxChart(timeSeries: TimeSeries): NgxChart {
-    const multi = timeSeries.cssc.confirmed.map((x) => ({
-      name: this.mapColumnName(x),
-      series: x.results.map((v) => ({ name: v.date.toDateString(), value: v.value })),
-    }));
-    return {
+  mapNgxChart(timeSeries: TimeSeries): NgxChart[] {
+    const ngChartBase = {
       colorScheme: { domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d', '#aae3f5'] },
-      multi,
       timeline: true,
       legend: true,
       showXAxisLabel: true,
       showLabels: true,
       showYAxisLabel: true,
-      view: ['1280', '400'],
+      view: ['1280', '340'],
     } as NgxChart;
+
+    return [timeSeries.cssc.confirmed, timeSeries.cssc.deaths, timeSeries.cssc.recovered].map(
+      (rows) =>
+        ({
+          ...ngChartBase,
+          multi: rows.map((row) => ({
+            name: this.mapColumnName(row),
+            series: row.results.map((result) => ({ name: result.date.toDateString(), value: result.value })),
+          })),
+        } as NgxChart)
+    );
   }
 }

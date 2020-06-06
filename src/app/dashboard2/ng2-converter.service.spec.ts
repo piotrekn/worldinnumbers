@@ -27,7 +27,6 @@ describe('Ng2ConverterService', () => {
       { results, country: 'Country', province: 'DeathsProvince' },
       { results, country: 'Country', province: 'RecoveredProvince' },
     ] as Row[]);
-    console.log(mapped);
     expect(mapped && mapped.values).toBeTruthy();
     expect(mapped.values && mapped.columns).toBeTruthy();
     expect(mapped.values[1][1]).toBe(5);
