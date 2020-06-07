@@ -9,15 +9,16 @@ import { map, shareReplay } from 'rxjs/operators';
   styleUrls: ['./chart-area.component.scss'],
 })
 export class ChartAreaComponent {
+  private countries$ = new BehaviorSubject<NgxChart<NgxValue>[]>(undefined);
+  private dataSeries$ = new BehaviorSubject<number>(0);
+
   @Input() set dataSeries(value: number) {
     this.dataSeries$.next(value);
   }
+
   @Input() set countries(value: NgxChart<NgxValue>[]) {
     this.countries$.next(value);
   }
-
-  private countries$ = new BehaviorSubject<NgxChart<NgxValue>[]>(undefined);
-  private dataSeries$ = new BehaviorSubject<number>(0);
 
   @Input() chartType: number;
 

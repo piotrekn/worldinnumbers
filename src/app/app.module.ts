@@ -20,7 +20,6 @@ import {
   MatCheckboxModule,
   MatInputModule,
 } from '@angular/material';
-import { GoogleChartsModule } from 'angular-google-charts';
 import { DataService } from './data.service';
 import { Ng2ConverterService } from './dashboard/ng2-converter.service';
 import { Papa } from 'ngx-papaparse';
@@ -33,7 +32,6 @@ import { ChartAreaComponent } from './dashboard/chart-area/chart-area.component'
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    GoogleChartsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
     MatInputModule,
     MatToolbarModule,

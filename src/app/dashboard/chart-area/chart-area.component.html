@@ -1,7 +1,6 @@
 <div *ngIf="countriesValue$ | async as countries; else noData" class="chart-container" [ngSwitch]="chartType">
   <ngx-charts-area-chart-stacked
     *ngSwitchCase="2"
-    [view]="countries.view"
     [scheme]="countries.colorScheme"
     [legend]="countries.legend"
     [showXAxisLabel]="countries.showXAxisLabel"
@@ -16,7 +15,6 @@
   </ngx-charts-area-chart-stacked>
   <ngx-charts-line-chart
     *ngSwitchCase="1"
-    [view]="countries.view"
     [scheme]="countries.colorScheme"
     [legend]="countries.legend"
     [showXAxisLabel]="countries.showXAxisLabel"

@@ -1,13 +1,3 @@
-export interface GoogleChart {
-  title: string;
-  type: string;
-  data: (string | number)[][];
-  columnNames: string[];
-  options: {};
-  width: number;
-  height: number;
-}
-
 export interface NgxChart<T> {
   multi: T[];
   view: any[];
