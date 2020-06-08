@@ -5,13 +5,11 @@ import { DataService } from '../data.service';
 import { Ng2ConverterService } from './ng2-converter.service';
 import { Papa } from 'ngx-papaparse';
 import { GoogleChartsModule } from 'angular-google-charts';
-import {
-  MatSelectModule,
-  MatFormFieldModule,
-  MatTableModule,
-  MatSortModule,
-  MatPaginatorModule,
-} from '@angular/material';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 

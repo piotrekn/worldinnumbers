@@ -7,7 +7,7 @@ describe('DataParserService', () => {
   });
 
   it('should be created', () => {
-    expect(TIME_SERIES && TIME_SERIES.cssc && TIME_SERIES.cssc.confirmed).toBeTruthy();
-    expect(TIME_SERIES.cssc.confirmed.length).toBeGreaterThan(0);
+    expect(TIME_SERIES?.cssc?.confirmed).toBeTruthy();
+    expect(TIME_SERIES?.cssc?.confirmed?.length).toBeGreaterThan(0);
   });
 });

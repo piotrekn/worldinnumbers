@@ -9,28 +9,11 @@ describe('Ng2ConverterService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({ providers: [Ng2ConverterService] });
 
-    service = TestBed.get(Ng2ConverterService);
+    service = TestBed.inject(Ng2ConverterService);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
-  });
-
-  it('should be created', () => {
-    const results = [
-      { date: new Date(), value: 10 },
-      { date: addDays(new Date(), -1), value: 5 },
-      { date: addDays(new Date(), -2), value: 1 },
-    ];
-    const mapped = service.mapGoogleData([
-      { results, country: 'Country', province: 'ConfirmedProvince' },
-      { results, country: 'Country', province: 'DeathsProvince' },
-      { results, country: 'Country', province: 'RecoveredProvince' },
-    ] as Row[]);
-    expect(mapped && mapped.values).toBeTruthy();
-    expect(mapped.values && mapped.columns).toBeTruthy();
-    expect(mapped.values[1][1]).toBe(5);
-    expect(mapped.columns[2]).toBe('Country, DeathsProvince');
   });
 
   it('should map row', () => {
@@ -45,16 +28,8 @@ describe('Ng2ConverterService', () => {
     );
   });
 
-  it('should map lines', () => {
-    const data = service.mapGoogleData(
-      TestBed.get<DataParserService>(DataParserService).parseAll(TIME_SERIES).cssc.confirmed
-    );
-    expect(data.columns.length).toBe(249);
-    expect(data.values.length).toBe(65);
-  });
-
   it('should map lines to NgxChart', () => {
-    const data = service.mapNgxChart(TestBed.get(DataParserService).parseAll(TIME_SERIES));
+    const data = service.mapNgxChart(TestBed.inject(DataParserService).parseAll(TIME_SERIES));
     expect(data.length).toBeGreaterThan(3);
     data.forEach((s) => expect(s.multi.length).toBeGreaterThan(0));
   });

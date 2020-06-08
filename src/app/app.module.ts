@@ -7,19 +7,17 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AngularFireModule } from '@angular/fire';
 import { environment } from 'src/environments/environment';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import {
-  MatToolbarModule,
-  MatTableModule,
-  MatSelectModule,
-  MatFormFieldModule,
-  MatSortModule,
-  MatGridListModule,
-  MatCardModule,
-  MatPaginatorModule,
-  MatTabsModule,
-  MatCheckboxModule,
-  MatInputModule,
-} from '@angular/material';
+import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSelectModule } from '@angular/material/select';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { DataService } from './data.service';
 import { Ng2ConverterService } from './dashboard/ng2-converter.service';
 import { Papa } from 'ngx-papaparse';

@@ -6,7 +6,9 @@ import { TimeSeries } from '../data/time-series';
 import { Ng2ConverterService } from './ng2-converter.service';
 import { NgxChart, SharedGroupStatistics, SharedStatistics, NgxValue } from './chart-types';
 import { TableRow, Row } from '../data-parser.service';
-import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Entity, EMPTY_ENTITY } from '../shared/dictionary';
 
@@ -16,8 +18,8 @@ import { Entity, EMPTY_ENTITY } from '../shared/dictionary';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit {
-  @ViewChild(MatSort, null) sort: MatSort;
-  @ViewChild(MatPaginator, null) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
   rawData: Observable<TimeSeries>;
   chart: Observable<any>;
@@ -46,7 +48,7 @@ export class DashboardComponent implements OnInit {
     const selectedCountriesData = combineLatest([this.selectedCountries$, data]).pipe(
       map((x) => {
         const [selectedCountries, timeSeries] = x;
-        if (selectedCountries && selectedCountries.keys.length === 0) {
+        if (selectedCountries?.keys.length === 0) {
           return null;
         }
         const rowPredicate = (row: Row) => {
@@ -123,7 +125,7 @@ export class DashboardComponent implements OnInit {
         this.selection.changed
           .pipe(
             bufferTime(1),
-            filter((events) => events && events.length > 0),
+            filter((events) => events?.length > 0),
             tap((events) => {
               const entity = { dictionary: {}, keys: events[0].source.selected.map((row) => row.country) } as Entity<
                 string
