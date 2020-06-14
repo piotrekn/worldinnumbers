@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TimeSeries } from '../data/time-series';
-import { Row } from '../data-parser.service';
+import { Row, DataType } from '../data-parser.service';
 import { NgxChart, NgxValue } from './chart-types';
 
 @Injectable()
@@ -27,19 +27,25 @@ export class Ng2ConverterService {
       view: ['1280', '340'],
     } as NgxChart<NgxValue>;
 
-    return [timeSeries.cssc.confirmed, timeSeries.cssc.deaths, timeSeries.cssc.recovered].map(
-      (rows) =>
-        ({
-          ...ngChartBase,
-          multi: rows.map(
-            (row) =>
-              ({
-                name: this.mapColumnName(row),
-                series: row.results.map((result) => ({ name: this.dateSerie(result.date), value: result.value })),
-              } as NgxValue)
-          ),
-        } as NgxChart<NgxValue>)
-    );
+    const localMap = (rows: Row[], dataType: DataType) => {
+      return {
+        ...ngChartBase,
+        dataType,
+        multi: rows.map(
+          (row) =>
+            ({
+              name: this.mapColumnName(row),
+              series: row.results.map((result) => ({ name: this.dateSerie(result.date), value: result.value })),
+            } as NgxValue)
+        ),
+      } as NgxChart<NgxValue>;
+    };
+
+    return [
+      localMap(timeSeries.cssc.confirmed, DataType.Confirmed),
+      localMap(timeSeries.cssc.deaths, DataType.Deaths),
+      localMap(timeSeries.cssc.recovered, DataType.Recovered),
+    ];
   }
 
   private dateSerie(date: Date) {

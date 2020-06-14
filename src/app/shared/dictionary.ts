@@ -4,7 +4,7 @@ export interface Dictionary<T> {
 
 export interface Entity<T> {
   dictionary: Dictionary<T>;
-  keys: T[];
+  keys: string[];
 }
 
 export function EMPTY_ENTITY<T>(): Entity<T> {

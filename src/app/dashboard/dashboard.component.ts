@@ -1,8 +1,7 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { DataService } from '../data.service';
-import { Observable, BehaviorSubject, combineLatest } from 'rxjs';
-import { map, tap, bufferTime, filter, shareReplay } from 'rxjs/operators';
-import { TimeSeries } from '../data/time-series';
+import { Observable, BehaviorSubject, combineLatest, Subscription, of } from 'rxjs';
+import { map, tap, bufferTime, filter, shareReplay, take, exhaustMap } from 'rxjs/operators';
 import { Ng2ConverterService } from './ng2-converter.service';
 import { NgxChart, SharedGroupStatistics, SharedStatistics, NgxValue } from './chart-types';
 import { TableRow, Row } from '../data-parser.service';
@@ -10,29 +9,26 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { SelectionModel } from '@angular/cdk/collections';
-import { Entity, EMPTY_ENTITY } from '../shared/dictionary';
+import { Entity, EMPTY_ENTITY, Dictionary } from '../shared/dictionary';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
-  rawData: Observable<TimeSeries>;
-  chart: Observable<any>;
-
-  selectedCountry = new BehaviorSubject<string>(undefined);
-  selectiveChart: Observable<string>;
   selectedDataType = 0;
 
   dataSource: Observable<TableRow[]>;
   matDataSource: Observable<MatTableDataSource<TableRow>>;
   selection = new SelectionModel<TableRow>(true, []);
   displayedColumns: string[] = ['select', 'provinces', 'country', 'confirmed', 'deaths', 'recovered'];
-  selectedCountries$ = new BehaviorSubject<Entity<string>>(EMPTY_ENTITY());
+  private selectedCountries$ = new BehaviorSubject<TableRow[]>([]);
+  private selectedCountriesNames$ = new BehaviorSubject<Entity<boolean>>(EMPTY_ENTITY());
 
   selectChartType = 1;
   charts: {
@@ -41,27 +37,40 @@ export class DashboardComponent implements OnInit {
     };
   };
 
-  constructor(private dataService: DataService, private converter: Ng2ConverterService) {}
+  private subscriptions: Subscription[] = [];
+
+  constructor(
+    private dataService: DataService,
+    private converter: Ng2ConverterService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((x) => x.unsubscribe());
+  }
 
   ngOnInit() {
     const data = this.dataService.get().pipe(shareReplay(1));
-    const selectedCountriesData = combineLatest([this.selectedCountries$, data]).pipe(
+    const ngxData = data.pipe(
+      map((x) => (x == null ? undefined : this.converter.mapNgxChart(x))),
+      shareReplay(1)
+    );
+
+    const selectedCountriesData = combineLatest([this.selectedCountriesNames$, ngxData]).pipe(
       map((x) => {
-        const [selectedCountries, timeSeries] = x;
+        const [selectedCountries, chartData] = x;
         if (selectedCountries?.keys.length === 0) {
           return null;
         }
-        const rowPredicate = (row: Row) => {
-          return selectedCountries.dictionary[row.country];
-        };
 
-        return {
-          cssc: {
-            confirmed: timeSeries.cssc.confirmed.filter(rowPredicate),
-            deaths: timeSeries.cssc.deaths.filter(rowPredicate),
-            recovered: timeSeries.cssc.recovered.filter(rowPredicate),
-          },
-        } as TimeSeries;
+        return chartData.map(
+          (d) =>
+            ({
+              ...d,
+              multi: this.filterChartData(d.multi, selectedCountries),
+            } as NgxChart<NgxValue>)
+        );
       }),
       shareReplay(1)
     );
@@ -115,29 +124,28 @@ export class DashboardComponent implements OnInit {
               recovered: dictEntry[1].recovered,
             } as TableRow)
         );
-      })
+      }),
+      shareReplay(1)
     );
+
     this.matDataSource = this.dataSource.pipe(
       map((x) => {
         this.selection = new SelectionModel<TableRow>(true, []);
 
         // todo should not be subscribed like this
-        this.selection.changed
-          .pipe(
-            bufferTime(1),
-            filter((events) => events?.length > 0),
-            tap((events) => {
-              const entity = { dictionary: {}, keys: events[0].source.selected.map((row) => row.country) } as Entity<
-                string
-              >;
-              entity.dictionary = entity.keys.reduce((p, c) => {
-                p[c] = true;
-                return p;
-              }, {});
-              this.selectedCountries$.next(entity);
-            })
-          )
-          .subscribe();
+        this.subscriptions.push(
+          this.selection.changed
+            .pipe(
+              bufferTime(1),
+              filter((events) => events?.length > 0),
+              map((events) => events[0].source.selected),
+              tap((selected) => {
+                this.selectedCountries$.next(selected);
+                this.updateUrlRoute(selected.map((s) => s.country));
+              })
+            )
+            .subscribe()
+        );
 
         const mat = new MatTableDataSource(x);
 
@@ -148,19 +156,57 @@ export class DashboardComponent implements OnInit {
       shareReplay(1)
     );
 
-    const ngxCountries$ = selectedCountriesData.pipe(
-      map((x) => (x == null ? undefined : this.converter.mapNgxChart(x))),
-      shareReplay(1)
-      // for log scale add yAxisTickFormatting Math.pow as well
-      // tap((x) => x.multi.forEach((m) => m.series.forEach((s) => s.value === Math.log10(s.value)))),
-    );
+    this.route.queryParams
+      .pipe(
+        exhaustMap((x) => {
+          if (!x.countries) {
+            return of([]);
+          }
+          const keys = (x.countries as string).split(',');
+          const entity = {
+            dictionary: keys.reduce((p, c) => {
+              p[c] = true;
+              return p;
+            }, {} as Dictionary<boolean>),
+            keys,
+          } as Entity<boolean>;
+          this.selectedCountriesNames$.next(entity);
+
+          return this.matDataSource.pipe(
+            filter((chartData) => chartData.data?.length > 0),
+            take(1),
+            map((source) => source.data.filter((row) => entity.dictionary[row.country])),
+            tap((r) => console.log(r)),
+            tap((rows) => this.selection.select(...rows))
+          );
+        })
+      )
+      .subscribe();
 
     this.charts = {
       ngx: {
-        countries$: ngxCountries$,
+        countries$: selectedCountriesData,
       },
     };
   }
+
+  private updateUrlRoute(countries: string[]) {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        countries: countries.length > 0 ? countries.join(',') : null,
+      },
+    });
+  }
+
+  // private filterChartData(values: NgxValue[], selectedCountries: Entity<boolean>) {
+  //   return values.filter((x) => selectedCountries.dictionary[x.name]);
+  // }
+
+  private filterChartData(values: { country?: string; name?: string }[], selectedCountries: Entity<boolean>) {
+    return values.filter((x) => selectedCountries.dictionary[x.name ?? x.country]);
+  }
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected(dataSource: MatTableDataSource<TableRow>) {
     const numSelected = this.selection.selected.length;

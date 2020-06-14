@@ -1,4 +1,7 @@
+import { DataType } from '../data-parser.service';
+
 export interface NgxChart<T> {
+  dataType: DataType;
   multi: T[];
   view: any[];
 
