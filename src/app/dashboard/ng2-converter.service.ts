@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
+import { DataType, Row } from '../data-parser.service';
 import { TimeSeries } from '../data/time-series';
-import { Row, DataType } from '../data-parser.service';
 import { NgxChart, NgxValue } from './chart-types';
 
 @Injectable()

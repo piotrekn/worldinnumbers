@@ -1,16 +1,16 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { DataService } from '../data.service';
-import { Observable, BehaviorSubject, combineLatest, Subscription, of } from 'rxjs';
-import { map, tap, bufferTime, filter, shareReplay, take, exhaustMap } from 'rxjs/operators';
-import { Ng2ConverterService } from './ng2-converter.service';
-import { NgxChart, SharedGroupStatistics, SharedStatistics, NgxValue } from './chart-types';
-import { TableRow, Row } from '../data-parser.service';
+import { SelectionModel } from '@angular/cdk/collections';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { SelectionModel } from '@angular/cdk/collections';
-import { Entity, EMPTY_ENTITY, Dictionary } from '../shared/dictionary';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject, combineLatest, Observable, of, Subscription } from 'rxjs';
+import { bufferTime, exhaustMap, filter, map, shareReplay, take, tap } from 'rxjs/operators';
+import { Row, TableRow } from '../data-parser.service';
+import { DataService } from '../data.service';
+import { Dictionary, EMPTY_ENTITY, Entity } from '../shared/dictionary';
+import { NgxChart, NgxValue, SharedGroupStatistics, SharedStatistics } from './chart-types';
+import { Ng2ConverterService } from './ng2-converter.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -91,7 +91,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       };
       let entry = countryEntry[key] as number;
       if (entry != null) {
-        const count = row.results[row.results.length - 1].value;
+        const count = row.results[row.results.length - 1]?.value ?? 0;
         entry += count;
         if (row.province) {
           countryEntry.provinces[row.province] = countryEntry.provinces[row.province] || ({} as SharedStatistics);
@@ -176,7 +176,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
             filter((chartData) => chartData.data?.length > 0),
             take(1),
             map((source) => source.data.filter((row) => entity.dictionary[row.country])),
-            tap((r) => console.log(r)),
             tap((rows) => this.selection.select(...rows))
           );
         })
