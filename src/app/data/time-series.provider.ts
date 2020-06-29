@@ -18,18 +18,20 @@ export class TimeSeriesProvider {
     if (this.state) {
       return this.state;
     }
+    const gitHubSourceUrl =
+      'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/';
     this.state = combineLatest([
-      this.load('/assets/time_series_covid19_confirmed_global.csv'),
-      this.load('/assets/time_series_covid19_deaths_global.csv'),
-      this.load('/assets/time_series_covid19_recovered_global.csv'),
+      this.load(`${gitHubSourceUrl}time_series_covid19_confirmed_global.csv`),
+      this.load(`${gitHubSourceUrl}time_series_covid19_deaths_global.csv`),
+      this.load(`${gitHubSourceUrl}time_series_covid19_recovered_global.csv`),
     ]).pipe(
       map((combined) => {
         const [confirmed, deaths, recovered] = combined;
         return {
           cssc: {
-            confirmed: confirmed.split('\r\n'),
-            deaths: deaths.split('\r\n'),
-            recovered: recovered.split('\r\n'),
+            confirmed,
+            deaths,
+            recovered,
           },
         } as TimeSeriesSource;
       }),

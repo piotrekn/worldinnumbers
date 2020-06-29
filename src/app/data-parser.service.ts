@@ -19,14 +19,21 @@ export class DataParserService {
     };
   }
 
-  parse(lines: string[]): any {
-    const csseData = [...lines];
+  parse(lines: string): any {
+    let csseData = lines;
+    if (!csseData) {
+      return [];
+    }
 
-    const header = csseData.shift().split(',');
+    const headerBreakpoint = csseData.indexOf('\n');
+    const header = csseData.substring(0, headerBreakpoint).split(',');
     const daysColumnIndex = 4;
     const days = header.slice(daysColumnIndex, header.length).map((x) => new Date(Date.parse(x)));
 
-    const parseResult = this.papa.parse(csseData.join('\n'), { header: false });
+    csseData = csseData.substring(headerBreakpoint + 1);
+    const parseResult = this.papa.parse(csseData, {
+      header: false,
+    });
     const rows = (parseResult.data as string[][]).map(
       (x) =>
         ({
