@@ -25,7 +25,7 @@ export class DataParserService {
       return [];
     }
 
-    const headerBreakpoint = csseData.indexOf('\n');
+    const headerBreakpoint = csseData.indexOf('\n'); // todo use regex /\r?\n|\r/ to split header
     const header = csseData.substring(0, headerBreakpoint).split(',');
     const daysColumnIndex = 4;
     const days = header.slice(daysColumnIndex, header.length).map((x) => new Date(Date.parse(x)));
@@ -50,7 +50,6 @@ export class DataParserService {
           ),
         } as Row)
     );
-
     return rows;
   }
 }

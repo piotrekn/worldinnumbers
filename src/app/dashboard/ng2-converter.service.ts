@@ -5,6 +5,8 @@ import { NgxChart, NgxValue } from './chart-types';
 
 @Injectable()
 export class Ng2ConverterService {
+  static dateFormatCache = new WeakMap();
+
   mapColumnName(row: Row, label?: string): string {
     const regionName = row.province ? `${row.country}, ${row.province}` : row.country;
     return label ? `${label} - ${regionName}` : regionName;
@@ -27,18 +29,29 @@ export class Ng2ConverterService {
       view: ['1280', '340'],
     } as NgxChart<NgxValue>;
 
+    const mapRow = (row: Row) => {
+      const result = {
+        name: this.mapColumnName(row),
+        series: [],
+      } as NgxValue;
+
+      for (const s of row.results) {
+        result.series.push({ name: this.dateSerie(s.date), value: s.value });
+      }
+      return result;
+    };
+
     const localMap = (rows: Row[], dataType: DataType) => {
-      return {
+      const result = {
         ...ngChartBase,
         dataType,
-        multi: rows.map(
-          (row) =>
-            ({
-              name: this.mapColumnName(row),
-              series: row.results.map((result) => ({ name: this.dateSerie(result.date), value: result.value })),
-            } as NgxValue)
-        ),
+        multi: [],
       } as NgxChart<NgxValue>;
+
+      for (const row of rows) {
+        result.multi.push(mapRow(row));
+      }
+      return result;
     };
 
     return [
@@ -49,6 +62,11 @@ export class Ng2ConverterService {
   }
 
   private dateSerie(date: Date) {
-    return date.toLocaleString('default', { month: 'short', day: 'numeric' });
+    let formatted = Ng2ConverterService.dateFormatCache.get(date);
+    if (!formatted) {
+      formatted = date.toLocaleString('default', { month: 'short', day: 'numeric' });
+      Ng2ConverterService.dateFormatCache.set(date, formatted);
+    }
+    return formatted;
   }
 }
