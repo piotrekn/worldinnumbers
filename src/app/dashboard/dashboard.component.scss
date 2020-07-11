@@ -1,10 +1,32 @@
 table#main-table {
   width: 100%;
+  tr {
+    text-align: center;
+
+    th,
+    th .mat-sort-header-container {
+      text-align: center !important;
+      justify-content: center;
+    }
+
+    th.mat-header-cell:first-of-type,
+    td.mat-cell:first-of-type,
+    td.mat-footer-cell:first-of-type {
+      padding-left: 0px !important;
+    }
+
+    th.mat-header-cell:last-of-type,
+    td.mat-cell:last-of-type,
+    td.mat-footer-cell:last-of-type {
+      padding-right: 0px !important;
+    }
+  }
 }
+
 .mat-header-cell,
 .mat-paginator,
 .mat-cell {
-  font-size: 0.625rem;
+  font-size: 0.68rem;
 }
 tr.mat-header-row {
   height: 2rem;
@@ -14,14 +36,22 @@ tr.mat-row {
   height: 1.25rem;
 }
 
-.main-card.card-container {
-  margin: 1rem;
+@media only screen and (min-width: 768px) {
+  .main-card.card-container {
+    margin: 1rem;
+  }
 }
 
 #data-parameters {
   @media only screen and (min-width: 884px) {
     position: absolute;
+    display: flex;
+    flex-wrap: wrap;
   }
+}
+
+.flex-12auto {
+  flex: 1 2 auto;
 }
 
 .table-container {

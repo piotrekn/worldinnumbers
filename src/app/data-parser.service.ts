@@ -33,6 +33,7 @@ export class DataParserService {
     csseData = csseData.substring(headerBreakpoint + 1);
     const parseResult = this.papa.parse(csseData, {
       header: false,
+      skipEmptyLines: true,
     });
     const rows = (parseResult.data as string[][]).map(
       (x) =>

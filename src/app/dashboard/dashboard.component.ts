@@ -1,4 +1,4 @@
-import { SelectionModel } from '@angular/cdk/collections';
+import { DataSource, SelectionModel } from '@angular/cdk/collections';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -18,19 +18,23 @@ import { Ng2ConverterService } from './ng2-converter.service';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
 
   selectedDataType = 0;
 
-  dataSource: Observable<TableRow[]>;
-  matDataSource: Observable<MatTableDataSource<TableRow>>;
+  matDataSource: MatTableDataSource<TableRow>;
+  dataSource: TableRow[];
+  dataSource$: Observable<TableRow[]>;
+  matDataSource$: Observable<MatTableDataSource<TableRow>>;
   selection = new SelectionModel<TableRow>(true, []);
-  displayedColumns: string[] = ['select', 'provinces', 'country', 'confirmed', 'deaths', 'recovered'];
+  displayedColumns: string[] = ['select', 'country', 'confirmed', 'deaths', 'recovered'];
   private selectedCountries$ = new BehaviorSubject<TableRow[]>([]);
   private selectedCountriesNames$ = new BehaviorSubject<Entity<boolean>>(EMPTY_ENTITY());
+  valuesType$ = new BehaviorSubject<number>(1);
 
   selectChartType = 1;
+  valuesType = 1;
   charts: {
     ngx?: {
       countries$: Observable<NgxChart<NgxValue>[]>;
@@ -52,25 +56,33 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const data = this.dataService.get().pipe(shareReplay(1));
-    const ngxData = data.pipe(
+    const ngxData$ = data.pipe(
       map((x) => (x == null ? undefined : this.converter.mapNgxChart(x))),
       shareReplay(1)
     );
 
-    const selectedCountriesData = combineLatest([this.selectedCountriesNames$, ngxData]).pipe(
+    const selectedCountriesData = combineLatest([this.valuesType$, this.selectedCountriesNames$, ngxData$]).pipe(
       map((x) => {
-        const [selectedCountries, chartData] = x;
+        const [valuesType, selectedCountries, chartData] = x;
         if (selectedCountries?.keys.length === 0) {
           return null;
         }
 
-        return chartData.map(
-          (d) =>
-            ({
-              ...d,
-              multi: this.filterChartData(d.multi, selectedCountries),
-            } as NgxChart<NgxValue>)
-        );
+        return chartData
+          .map(
+            (d) =>
+              ({
+                ...d,
+                multi: this.filterChartData(d.multi, selectedCountries),
+              } as NgxChart<NgxValue>)
+          )
+
+          .map((d) => {
+            if (valuesType === 2) {
+              return d;
+            }
+            return { ...d, multi: this.mapValueType(d, valuesType) };
+          });
       }),
       shareReplay(1)
     );
@@ -101,7 +113,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       countryEntry[key] = entry;
     };
 
-    this.dataSource = data.pipe(
+    this.dataSource$ = data.pipe(
       map((x) => {
         const countriesDict: {
           [countryName: string]: {
@@ -128,7 +140,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       shareReplay(1)
     );
 
-    this.matDataSource = this.dataSource.pipe(
+    this.matDataSource$ = this.dataSource$.pipe(
       map((x) => {
         this.selection = new SelectionModel<TableRow>(true, []);
 
@@ -147,12 +159,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
             .subscribe()
         );
 
-        const mat = new MatTableDataSource(x);
+        const matDataSource = new MatTableDataSource(x);
+        matDataSource.sort = this.sort;
+        matDataSource.paginator = this.paginator;
 
-        mat.sort = this.sort;
-        mat.paginator = this.paginator;
-        return mat;
+        return matDataSource;
       }),
+      tap((matDataSource) => (this.matDataSource = matDataSource)),
       shareReplay(1)
     );
 
@@ -172,7 +185,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           } as Entity<boolean>;
           this.selectedCountriesNames$.next(entity);
 
-          return this.matDataSource.pipe(
+          return this.matDataSource$.pipe(
             filter((chartData) => chartData.data?.length > 0),
             take(1),
             map((source) => source.data.filter((row) => entity.dictionary[row.country])),
@@ -189,6 +202,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     };
   }
 
+  private mapValueType(d: NgxChart<NgxValue>, valueType: number): NgxValue[] {
+    return valueType === 1
+      ? d.multi.map((v) => ({
+          ...v,
+          series: v.series.map((s, i, arr) => ({ ...s, value: s.value - arr[i - 1]?.value || 0 })),
+        }))
+      : d.multi;
+  }
+
   private updateUrlRoute(countries: string[]) {
     this.router.navigate([], {
       relativeTo: this.route,
@@ -198,26 +220,23 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  // private filterChartData(values: NgxValue[], selectedCountries: Entity<boolean>) {
-  //   return values.filter((x) => selectedCountries.dictionary[x.name]);
-  // }
-
   private filterChartData(values: { country?: string; name?: string }[], selectedCountries: Entity<boolean>) {
     return values.filter((x) => selectedCountries.dictionary[x.name ?? x.country]);
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected(dataSource: MatTableDataSource<TableRow>) {
-    const numSelected = this.selection.selected.length;
-    const numRows = dataSource.data.length;
-    return numSelected === numRows;
+    const selectedCount = this.selection.selected.length;
+    const rowsCount = dataSource?.data?.length ?? 0;
+    return selectedCount === rowsCount;
   }
 
   /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle(dataSource: MatTableDataSource<TableRow>) {
-    this.isAllSelected(dataSource)
+  masterToggle(dataSource: DataSource<TableRow>) {
+    const matDataSource = dataSource as MatTableDataSource<TableRow>;
+    this.isAllSelected(matDataSource)
       ? this.selection.clear()
-      : dataSource.data.forEach((row) => this.selection.select(row));
+      : matDataSource.data.forEach((row) => this.selection.select(row));
   }
 
   /** The label for the checkbox on the passed row */

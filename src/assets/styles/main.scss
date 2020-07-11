@@ -7,6 +7,15 @@ body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
 
-.margin-lr-1 {
-  margin: 0 1rem;
+.field-small-margin {
+  margin: 0 0.1rem;
+}
+
+table#main-table {
+  tr {
+    th .mat-sort-header-container {
+      text-align: center !important;
+      justify-content: center;
+    }
+  }
 }
