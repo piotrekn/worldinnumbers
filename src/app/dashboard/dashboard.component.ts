@@ -10,6 +10,9 @@ import { Row, TableRow } from '../data-parser.service';
 import { DataService } from '../data.service';
 import { Dictionary, EMPTY_ENTITY, Entity } from '../shared/dictionary';
 import { NgxChart, NgxValue, SharedGroupStatistics, SharedStatistics } from './chart-types';
+import { SelectChartType } from './models/select-chart-type.enum';
+import { SelectedDataType } from './models/selected-data-type.enum';
+import { ValueType } from './models/value-type.enum';
 import { Ng2ConverterService } from './ng2-converter.service';
 
 @Component({
@@ -21,7 +24,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
 
-  selectedDataType = 0;
+  selectedDataType = SelectedDataType.Confirmed;
 
   matDataSource: MatTableDataSource<TableRow>;
   dataSource: TableRow[];
@@ -33,8 +36,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private selectedCountriesNames$ = new BehaviorSubject<Entity<boolean>>(EMPTY_ENTITY());
   valuesType$ = new BehaviorSubject<number>(1);
 
-  selectChartType = 1;
-  valuesType = 1;
+  selectChartType = SelectChartType.Linear;
+  valuesType = ValueType.Daily;
   charts: {
     ngx?: {
       countries$: Observable<NgxChart<NgxValue>[]>;
@@ -42,6 +45,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
   };
 
   private subscriptions: Subscription[] = [];
+
+  Enums = { ValueType, SelectChartType, SelectedDataType };
 
   constructor(
     private dataService: DataService,

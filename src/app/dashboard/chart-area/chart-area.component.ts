@@ -1,7 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { NgxChart, NgxValue } from 'src/app/dashboard/chart-types';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
+import { NgxChart, NgxValue } from 'src/app/dashboard/chart-types';
+import { SelectChartType } from '../models/select-chart-type.enum';
+import { SelectedDataType } from '../models/selected-data-type.enum';
 
 @Component({
   selector: 'app-chart-area',
@@ -9,10 +11,12 @@ import { map, shareReplay } from 'rxjs/operators';
   styleUrls: ['./chart-area.component.scss'],
 })
 export class ChartAreaComponent {
+  Enums = { SelectChartType };
+
   private countries$ = new BehaviorSubject<NgxChart<NgxValue>[]>(undefined);
   private dataSeries$ = new BehaviorSubject<number>(0);
 
-  @Input() set dataSeries(value: number) {
+  @Input() set dataSeries(value: SelectedDataType) {
     this.dataSeries$.next(value);
   }
 
@@ -20,7 +24,7 @@ export class ChartAreaComponent {
     this.countries$.next(value);
   }
 
-  @Input() chartType: number;
+  @Input() chartType: SelectChartType;
 
   countriesValue$: Observable<NgxChart<NgxValue>> = combineLatest([this.dataSeries$, this.countries$]).pipe(
     map((x) => {

@@ -58,15 +58,15 @@
         <mat-form-field class="field-small-margin flex-12auto">
           <mat-label>Chart type</mat-label>
           <mat-select [(value)]="selectChartType">
-            <mat-option value="1" default>Line chart</mat-option>
-            <mat-option value="2">Stacked chart</mat-option>
+            <mat-option [value]="Enums.SelectChartType.Linear" default>Line chart</mat-option>
+            <mat-option [value]="Enums.SelectChartType.Stacked">Stacked chart</mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field class="field-small-margin flex-12auto">
           <mat-label>Show daily values?</mat-label>
-          <mat-select [value]="valuesType" (valueChange)="valuesType$.next(+$event)">
-            <mat-option value="1" default>Yes</mat-option>
-            <mat-option value="2">No</mat-option>
+          <mat-select [value]="valuesType" (valueChange)="valuesType$.next($event)">
+            <mat-option [value]="Enums.ValueType.Daily" default>Yes</mat-option>
+            <mat-option [value]="Enums.ValueType.Total">No</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
@@ -84,7 +84,11 @@
           <ng-container
             *ngTemplateOutlet="
               chartArea;
-              context: { dataSeries: 0, chartType: selectChartType, countries$: charts.ngx.countries$ }
+              context: {
+                dataSeries: Enums.SelectedDataType.Confirmed,
+                chartType: selectChartType,
+                countries$: charts.ngx.countries$
+              }
             "
             matTabContent
           >
@@ -94,7 +98,11 @@
           <ng-container
             *ngTemplateOutlet="
               chartArea;
-              context: { dataSeries: 1, chartType: selectChartType, countries$: charts.ngx.countries$ }
+              context: {
+                dataSeries: Enums.SelectedDataType.Deaths,
+                chartType: selectChartType,
+                countries$: charts.ngx.countries$
+              }
             "
             matTabContent
           >
@@ -104,7 +112,11 @@
           <ng-container
             *ngTemplateOutlet="
               chartArea;
-              context: { dataSeries: 2, chartType: selectChartType, countries$: charts.ngx.countries$ }
+              context: {
+                dataSeries: Enums.SelectedDataType.Recovered,
+                chartType: selectChartType,
+                countries$: charts.ngx.countries$
+              }
             "
             matTabContent
           >
