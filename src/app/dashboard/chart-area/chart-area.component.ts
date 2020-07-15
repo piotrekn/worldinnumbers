@@ -16,6 +16,8 @@ export class ChartAreaComponent {
   private countries$ = new BehaviorSubject<NgxChart<NgxValue>[]>(undefined);
   private dataSeries$ = new BehaviorSubject<number>(0);
 
+  view: [number, number];
+
   @Input() set dataSeries(value: SelectedDataType) {
     this.dataSeries$.next(value);
   }
@@ -36,4 +38,12 @@ export class ChartAreaComponent {
     }),
     shareReplay(1)
   );
+
+  constructor() {
+    this.view = [innerWidth / 1.3, 400];
+  }
+  // view is the variable used to change the chart size (Ex: view = [width, height])
+  onResize(event) {
+    this.view = [event.target.innerWidth / 1.35, 400];
+  }
 }
