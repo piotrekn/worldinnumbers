@@ -17,6 +17,7 @@ export class ChartAreaComponent {
   private dataSeries$ = new BehaviorSubject<number>(0);
 
   view: [number, number];
+  legendPosition = 'below';
 
   @Input() set dataSeries(value: SelectedDataType) {
     this.dataSeries$.next(value);
@@ -40,10 +41,12 @@ export class ChartAreaComponent {
   );
 
   constructor() {
-    this.view = [innerWidth / 1.3, 400];
+    this.onResize({ target: { innerWidth } });
   }
-  // view is the variable used to change the chart size (Ex: view = [width, height])
+
   onResize(event) {
-    this.view = [event.target.innerWidth / 1.35, 400];
+    const isHigher = event.target.innerWidth >= 550;
+    this.legendPosition = isHigher ? 'right' : 'below';
+    this.view = [event.target.innerWidth * 0.945, isHigher ? 352 : 298];
   }
 }

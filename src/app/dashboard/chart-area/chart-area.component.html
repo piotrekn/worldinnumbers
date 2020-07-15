@@ -4,6 +4,7 @@
     (window:resize)="onResize($event)"
     [scheme]="countries.colorScheme"
     [legend]="countries.legend"
+    [legendPosition]="legendPosition"
     [showXAxisLabel]="countries.showXAxisLabel"
     [showYAxisLabel]="countries.showYAxisLabel"
     [xAxis]="countries.xAxis"
@@ -13,6 +14,7 @@
     [timeline]="countries.timeline"
     [results]="countries.multi"
     [view]="view"
+    [timeline]="true"
   >
   </ngx-charts-area-chart-stacked>
   <ngx-charts-line-chart
@@ -20,6 +22,7 @@
     (window:resize)="onResize($event)"
     [scheme]="countries.colorScheme"
     [legend]="countries.legend"
+    [legendPosition]="legendPosition"
     [showXAxisLabel]="countries.showXAxisLabel"
     [showYAxisLabel]="countries.showYAxisLabel"
     [xAxis]="countries.xAxis"
@@ -29,6 +32,7 @@
     [timeline]="countries.timeline"
     [results]="countries.multi"
     [view]="view"
+    [timeline]="true"
   >
   </ngx-charts-line-chart>
 </div>

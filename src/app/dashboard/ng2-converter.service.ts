@@ -5,8 +5,6 @@ import { NgxChart, NgxValue } from './chart-types';
 
 @Injectable()
 export class Ng2ConverterService {
-  static dateFormatCache = new WeakMap();
-
   mapColumnName(row: Row, label?: string): string {
     const regionName = row.province ? `${row.country}, ${row.province}` : row.country;
     return label ? `${label} - ${regionName}` : regionName;
@@ -36,7 +34,7 @@ export class Ng2ConverterService {
       } as NgxValue;
 
       for (const s of row.results) {
-        result.series.push({ name: this.dateSerie(s.date), value: s.value });
+        result.series.push({ name: s.date, value: s.value });
       }
       return result;
     };
@@ -59,14 +57,5 @@ export class Ng2ConverterService {
       localMap(timeSeries.cssc.deaths, DataType.Deaths),
       localMap(timeSeries.cssc.recovered, DataType.Recovered),
     ];
-  }
-
-  private dateSerie(date: Date) {
-    let formatted = Ng2ConverterService.dateFormatCache.get(date);
-    if (!formatted) {
-      formatted = date.toLocaleString('default', { month: 'short', day: 'numeric' });
-      Ng2ConverterService.dateFormatCache.set(date, formatted);
-    }
-    return formatted;
   }
 }
