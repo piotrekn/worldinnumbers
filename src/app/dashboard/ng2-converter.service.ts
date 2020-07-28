@@ -30,6 +30,7 @@ export class Ng2ConverterService {
     const mapRow = (row: Row) => {
       const result = {
         name: this.mapColumnName(row),
+        country: row.country,
         series: [],
       } as NgxValue;
 

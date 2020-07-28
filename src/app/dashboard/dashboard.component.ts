@@ -225,8 +225,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     });
   }
 
-  private filterChartData(values: { country?: string; name?: string }[], selectedCountries: Entity<boolean>) {
-    return values.filter((x) => selectedCountries.dictionary[x.name ?? x.country]);
+  private filterChartData(values: { country?: string }[], selectedCountries: Entity<boolean>) {
+    return values.filter((x) => selectedCountries.dictionary[x.country]);
   }
 
   /** Whether the number of selected elements matches the total number of rows. */
