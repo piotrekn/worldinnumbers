@@ -22,6 +22,7 @@ export interface NgxChart<T> {
 }
 
 export interface NgxValue {
+  country: string;
   name: string;
   series: {
     name: Date;

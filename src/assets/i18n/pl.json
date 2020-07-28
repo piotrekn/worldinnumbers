@@ -1,0 +1,11 @@
+{
+  "cookie": {
+    "header": "Strona używa ciasteczek!",
+    "message": "Ta strona używa ciasteczek w celu zapewnienia najlepszej jakości usług.",
+    "dismiss": "Ok, rozumiem!",
+    "allow": "Zgadzam się",
+    "deny": "Nie zgadzam się",
+    "link": "Dowiedz się więcej",
+    "policy": "Polityka ciasteczek"
+  }
+}

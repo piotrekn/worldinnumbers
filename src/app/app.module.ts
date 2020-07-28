@@ -1,6 +1,7 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { AngularFireModule } from '@angular/fire';
+import { AngularFireAnalyticsModule, ScreenTrackingService, UserTrackingService } from '@angular/fire/analytics';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,7 +15,10 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
+import { NgcCookieConsentConfig, NgcCookieConsentModule } from 'ngx-cookieconsent';
 import { Papa } from 'ngx-papaparse';
 import { environment } from 'src/environments/environment';
 import { AppRoutingModule } from './app-routing.module';
@@ -25,14 +29,44 @@ import { Ng2ConverterService } from './dashboard/ng2-converter.service';
 import { DataService } from './data.service';
 import { TimeSeriesProvider } from './data/time-series.provider';
 
+const cookieConfig: NgcCookieConsentConfig = {
+  cookie: {
+    domain: environment.domain,
+  },
+  palette: {
+    popup: {
+      background: '#000',
+    },
+    button: {
+      background: '#f1d600',
+    },
+  },
+  theme: 'edgeless',
+  type: 'info',
+};
+
+// AoT requires an exported function for factories
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
+
 @NgModule({
   declarations: [AppComponent, DashboardComponent, ChartAreaComponent],
   imports: [
+    NgcCookieConsentModule.forRoot(cookieConfig),
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient],
+      },
+    }),
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
+    environment.production ? AngularFireAnalyticsModule : [],
     MatInputModule,
     MatToolbarModule,
     MatTableModule,
@@ -46,7 +80,7 @@ import { TimeSeriesProvider } from './data/time-series.provider';
     MatFormFieldModule,
     NgxChartsModule,
   ],
-  providers: [DataService, Ng2ConverterService, Papa, TimeSeriesProvider],
+  providers: [DataService, Ng2ConverterService, Papa, TimeSeriesProvider, ScreenTrackingService, UserTrackingService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
