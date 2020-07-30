@@ -1,6 +1,9 @@
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { NgcCookieConsentService } from 'ngx-cookieconsent';
+import { Observable } from 'rxjs';
+import { map, shareReplay } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +13,16 @@ import { NgcCookieConsentService } from 'ngx-cookieconsent';
 export class AppComponent implements OnInit {
   title = 'World in numbers';
 
-  constructor(private ccService: NgcCookieConsentService, private translateService: TranslateService) {}
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
+    map((result) => result.matches),
+    shareReplay()
+  );
+
+  constructor(
+    private ccService: NgcCookieConsentService,
+    private translateService: TranslateService,
+    private breakpointObserver: BreakpointObserver
+  ) {}
 
   ngOnInit() {
     // Support for translated cookies messages
