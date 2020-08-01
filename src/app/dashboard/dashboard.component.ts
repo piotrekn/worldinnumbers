@@ -34,7 +34,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   displayedColumns: string[] = ['select', 'country', 'confirmed', 'deaths', 'recovered'];
   private selectedCountries$ = new BehaviorSubject<TableRow[]>([]);
   private selectedCountriesNames$ = new BehaviorSubject<Entity<boolean>>(EMPTY_ENTITY());
-  valuesType$ = new BehaviorSubject<number>(1);
+  valuesType$ = new BehaviorSubject<ValueType>(ValueType.Daily);
 
   selectChartType = SelectChartType.Linear;
   valuesType = ValueType.Daily;
@@ -83,7 +83,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           )
 
           .map((d) => {
-            if (valuesType === 2) {
+            if (valuesType === ValueType.Total) {
               return d;
             }
             return { ...d, multi: this.mapValueType(d, valuesType) };
@@ -207,8 +207,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     };
   }
 
-  private mapValueType(d: NgxChart<NgxValue>, valueType: number): NgxValue[] {
-    return valueType === 1
+  private mapValueType(d: NgxChart<NgxValue>, valueType: ValueType): NgxValue[] {
+    return valueType === ValueType.Daily
       ? d.multi.map((v) => ({
           ...v,
           series: v.series.map((s, i, arr) => ({ ...s, value: s.value - arr[i - 1]?.value || 0 })),
