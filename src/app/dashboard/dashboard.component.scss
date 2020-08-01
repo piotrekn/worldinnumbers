@@ -55,7 +55,8 @@ tr.mat-row {
 }
 
 .table-container {
-  height: 332px;
+  max-height: 332px;
+  min-height: 55px;
 }
 
 app-chart-area {
