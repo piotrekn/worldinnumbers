@@ -27,8 +27,10 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { NgcCookieConsentConfig, NgcCookieConsentModule } from 'ngx-cookieconsent';
 import { Papa } from 'ngx-papaparse';
 import { environment } from 'src/environments/environment';
+import { AboutComponent } from './about/about.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { CsseDashboardComponent } from './csse-dashboard/csse-dashboard.component';
 import { ChartAreaComponent } from './dashboard/chart-area/chart-area.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { Ng2ConverterService } from './dashboard/ng2-converter.service';
@@ -57,7 +59,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 }
 
 @NgModule({
-  declarations: [AppComponent, DashboardComponent, ChartAreaComponent],
+  declarations: [AppComponent, DashboardComponent, ChartAreaComponent, AboutComponent, CsseDashboardComponent],
   imports: [
     NgcCookieConsentModule.forRoot(cookieConfig),
     TranslateModule.forRoot({
