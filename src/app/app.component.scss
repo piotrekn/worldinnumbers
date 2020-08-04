@@ -23,3 +23,16 @@ mat-sidenav.sidenav {
   font-size: 45px;
   display: contents;
 }
+
+.version-bar {
+  position: absolute;
+  bottom: 0;
+  padding: 10px;
+  width: -webkit-fill-available;
+}
+
+#language-selector {
+  position: absolute;
+  right: 5px;
+  width: 50px;
+}

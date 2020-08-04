@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { NgcCookieConsentService } from 'ngx-cookieconsent';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +13,9 @@ import { map, shareReplay } from 'rxjs/operators';
 })
 export class AppComponent implements OnInit {
   title = 'World in numbers';
+  version = 'v0.7.1';
+  language: string;
+  languages = ['en', 'pl'];
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
     map((result) => result.matches),
@@ -25,14 +29,11 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.translateService.addLangs(this.languages);
+    this.changeLanguage(this.getLanguage());
+
     // Support for translated cookies messages
-    this.translateService.addLangs(['en', 'pl']);
-    this.translateService.setDefaultLang('en');
-
-    const browserLang = this.translateService.getBrowserLang();
-    this.translateService.use(browserLang.match(/en|pl/) ? browserLang : 'en');
-
-    this.translateService //
+    this.translateService
       .get([
         'cookie.header',
         'cookie.message',
@@ -56,5 +57,24 @@ export class AppComponent implements OnInit {
         this.ccService.destroy(); // remove previous cookie bar (with default messages)
         this.ccService.init(this.ccService.getConfig()); // update config with translated messages
       });
+  }
+
+  changeLanguage(language: string) {
+    const newLanguage = this.languages.includes(language) ? language : 'en';
+    console.log(language, this.language);
+    if (this.language === newLanguage) {
+      return;
+    }
+    this.language = newLanguage;
+    this.translateService.use(newLanguage);
+    this.setLanguage(newLanguage);
+  }
+
+  private getLanguage() {
+    return localStorage.getItem(`${environment.domain}.language`) ?? this.translateService.getBrowserLang();
+  }
+
+  private setLanguage(language: string) {
+    return localStorage.setItem(`${environment.domain}.language`, language);
   }
 }

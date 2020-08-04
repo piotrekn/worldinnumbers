@@ -1,11 +1,37 @@
 {
   "cookie": {
     "header": "Strona używa ciasteczek!",
-    "message": "Ta strona używa ciasteczek w celu zapewnienia najlepszej jakości usług.",
+    "message": "Ta strona używa ciasteczek w celu zapewnienia lepszej jakości usług.",
     "dismiss": "Ok, rozumiem!",
     "allow": "Zgadzam się",
     "deny": "Nie zgadzam się",
     "link": "Dowiedz się więcej",
     "policy": "Polityka ciasteczek"
+  },
+  "text": {
+    "Confirmed": "Potwierdzone",
+    "Recovered": "Ozdrowienia",
+    "Deaths": "Zgony",
+    "Country": "Kraj",
+    "Filter": "Filtruj",
+    "ChartType": "Typ wykresu",
+    "ShowDailyValues": "Show daily values?",
+    "Yes": "Tak",
+    "No": "Nie",
+    "NoData": "Brak danych do wyświetlenia",
+    "Contact": "Kontakt",
+    "About": "O mnie",
+    "CSSE Dashboard": "Pulpit CSSE",
+    "TableFooterText": "Liczba wierszy na stronę"
+  },
+  "Enums": {
+    "SelectChartType": {
+      "Stacked": "Skumulowany",
+      "Linear": "Liniowy"
+    }
+  },
+  "About": {
+    "MainGoal": "Głównym celem projektu jest nietypowa prezentacja danych. Obserwuj trendy i porównuj sytuację różnych krajów, czy regionów.",
+    "DataCredit": "Dana pozyskane dzięki Center for Systems Science and Engineering (CSSE) w Johns Hopkins University. Agregowane z wielu źródeł."
   }
 }
