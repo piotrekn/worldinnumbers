@@ -68,6 +68,7 @@ export function HttpLoaderFactory(http: HttpClient) {
         useFactory: HttpLoaderFactory,
         deps: [HttpClient],
       },
+      defaultLanguage: 'en',
     }),
     CommonModule,
     BrowserModule,
