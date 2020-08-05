@@ -1,5 +1,5 @@
 import { DataSource, SelectionModel } from '@angular/cdk/collections';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -20,7 +20,7 @@ import { Ng2ConverterService } from './ng2-converter.service';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
 
@@ -205,6 +205,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         countries$: selectedCountriesData,
       },
     };
+  }
+
+  ngAfterViewInit() {
+    if (this.matDataSource) {
+      this.matDataSource.paginator = this.paginator;
+    }
   }
 
   private mapValueType(d: NgxChart<NgxValue>, valueType: ValueType): NgxValue[] {

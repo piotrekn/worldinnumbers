@@ -13,7 +13,7 @@ import { environment } from 'src/environments/environment';
 })
 export class AppComponent implements OnInit {
   title = 'World in numbers';
-  version = 'v0.7.1';
+  version = 'v0.7.2';
   language: string;
   languages = ['en', 'pl'];
 
