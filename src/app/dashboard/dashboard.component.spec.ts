@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -11,6 +12,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 import { Papa } from 'ngx-papaparse';
+import { TranslateTestingModule } from 'ngx-translate-testing';
 import { NEVER } from 'rxjs';
 import { DataService } from '../data.service';
 import { TimeSeriesProvider } from '../data/time-series.provider';
@@ -25,6 +27,8 @@ describe('DashboardComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
+        TranslateTestingModule.withTranslations('en', require('../../assets/i18n/en.json')).withDefaultLanguage('en'),
+        MatCheckboxModule,
         MatSelectModule,
         MatFormFieldModule,
         NgxChartsModule,

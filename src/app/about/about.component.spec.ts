@@ -1,5 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { MatCardModule } from '@angular/material/card';
+import { TranslateTestingModule } from 'ngx-translate-testing';
 import { AboutComponent } from './about.component';
 
 describe('AboutComponent', () => {
@@ -8,6 +9,10 @@ describe('AboutComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [
+        TranslateTestingModule.withTranslations('en', require('../../assets/i18n/en.json')).withDefaultLanguage('en'),
+        MatCardModule,
+      ],
       declarations: [AboutComponent],
     }).compileComponents();
   }));

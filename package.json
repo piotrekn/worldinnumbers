@@ -66,6 +66,7 @@
     "karma-coverage-istanbul-reporter": "~2.0.1",
     "karma-jasmine": "~2.0.1",
     "karma-jasmine-html-reporter": "^1.4.0",
+    "ngx-translate-testing": "^4.0.0",
     "prettier": "2.0.1",
     "pretty-quick": "^2.0.1",
     "protractor": "^7.0.0",

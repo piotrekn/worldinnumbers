@@ -1,5 +1,5 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { TranslateTestingModule } from 'ngx-translate-testing';
 import { ChartAreaComponent } from './chart-area.component';
 
 describe('ChartAreaComponent', () => {
@@ -8,6 +8,11 @@ describe('ChartAreaComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [
+        TranslateTestingModule.withTranslations('en', require('../../../assets/i18n/en.json')).withDefaultLanguage(
+          'en'
+        ),
+      ],
       declarations: [ChartAreaComponent],
     }).compileComponents();
   }));
