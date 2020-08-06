@@ -50,3 +50,5 @@ firestore-debug.log
 firebase-debug.log
 src/environments/firebase.config.prod.ts
 src/environments/firebase.config.ts
+.firebase/hosting.*.cache
+ui-debug.log
