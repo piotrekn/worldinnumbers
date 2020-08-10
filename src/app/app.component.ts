@@ -5,6 +5,7 @@ import { NgcCookieConsentService } from 'ngx-cookieconsent';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { version } from '../../package.json';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,7 @@ import { environment } from 'src/environments/environment';
 })
 export class AppComponent implements OnInit {
   title = 'World in numbers';
-  version = 'v0.7.2';
+  version = version;
   language: string;
   languages = ['en', 'pl'];
 

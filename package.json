@@ -1,6 +1,6 @@
 {
   "name": "covid-numbers",
-  "version": "0.0.1",
+  "version": "0.7.2",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -16,7 +16,10 @@
     "ib-all": "npm run install-build-all",
     "emulate": "firebase emulators:start --only functions,firestore,hosting",
     "deploy": "ng build --prod & firebase deploy --only hosting",
-    "deployall": "firebase deploy"
+    "deployall": "firebase deploy",
+    "postdeploy": "npm run release",
+    "release": "standard-version -a",
+    "release-dry": "standard-version -a --dry-run"
   },
   "private": true,
   "dependencies": {
@@ -41,6 +44,7 @@
     "ngx-cookieconsent": "^2.2.3",
     "ngx-papaparse": "^4.0.4",
     "rxjs": "~6.5.5",
+    "standard-changelog": "^2.0.24",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"
   },
