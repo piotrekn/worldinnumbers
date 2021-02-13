@@ -1,5 +1,7 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Meta } from '@angular/platform-browser';
+import '@mszewcz/safe-subscribe';
 import { TranslateService } from '@ngx-translate/core';
 import { NgcCookieConsentService } from 'ngx-cookieconsent';
 import { Observable } from 'rxjs';
@@ -12,7 +14,7 @@ import { version } from '../../package.json';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnDestroy, OnInit {
   title = 'World in numbers';
   version = version;
   language: string;
@@ -26,7 +28,8 @@ export class AppComponent implements OnInit {
   constructor(
     private ccService: NgcCookieConsentService,
     private translateService: TranslateService,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
+    private metaService: Meta
   ) {}
 
   ngOnInit() {
@@ -44,7 +47,7 @@ export class AppComponent implements OnInit {
         'cookie.link',
         'cookie.policy',
       ])
-      .subscribe((data) => {
+      .safeSubscribe(this, (data) => {
         this.ccService.getConfig().content = this.ccService.getConfig().content || {};
         // Override default messages with the translated ones
         this.ccService.getConfig().content.header = data['cookie.header'];
@@ -62,13 +65,13 @@ export class AppComponent implements OnInit {
 
   changeLanguage(language: string) {
     const newLanguage = this.languages.includes(language) ? language : 'en';
-    console.log(language, this.language);
     if (this.language === newLanguage) {
       return;
     }
     this.language = newLanguage;
     this.translateService.use(newLanguage);
     this.setLanguage(newLanguage);
+    this.updateTags();
   }
 
   private getLanguage() {
@@ -77,5 +80,22 @@ export class AppComponent implements OnInit {
 
   private setLanguage(language: string) {
     return localStorage.setItem(`${environment.domain}.language`, language);
+  }
+
+  private updateTags() {
+    this.translateService.get(['tags.keywords', 'tags.description']).safeSubscribe(this, (data) => {
+      const tags = [
+        { name: 'keywords', content: data['tags.keywords'] },
+        { name: 'description', content: data['tags.description'] },
+      ];
+      console.log(tags);
+      // this.metaService.addTags(tags);
+      this.metaService.updateTag(tags[0]);
+      this.metaService.updateTag(tags[1]);
+    });
+  }
+
+  ngOnDestroy(): void {
+    throw new Error('Method not implemented.');
   }
 }

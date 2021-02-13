@@ -33,5 +33,9 @@
   "About": {
     "MainGoal": "Main goal of the project is to present the data from a different angle. See the trends and compare situation of other countries and regions.",
     "DataCredit": "Data acquired thanks to Center for Systems Science and Engineering (CSSE) at Johns Hopkins University, and aggregated from number of sources."
+  },
+  "tags": {
+    "keywords": "coronavirus, Covid-19, Covid, daily cases, daily deaths, statistics",
+    "description": "Statistics, graphs, and data tables, total number of cases, cases per day, recovered and deaths. Look for the trends and compare situation of other countries and regions."
   }
 }

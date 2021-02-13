@@ -33,5 +33,9 @@
   "About": {
     "MainGoal": "Głównym celem projektu jest nietypowa prezentacja danych. Obserwuj trendy i porównuj sytuację różnych krajów, czy regionów.",
     "DataCredit": "Dana pozyskane dzięki Center for Systems Science and Engineering (CSSE) w Johns Hopkins University. Agregowane z wielu źródeł."
+  },
+  "tags": {
+    "keywords": "koronawirus, Covid-19, Covid, dziennie przypadków, liczba zgonów, statystyki",
+    "description": "Statystyki, wykresy i tabele, całkowita liczba przypadków, przypadki na dzień, ozdrowieńcy i przypadki śmiertelne. Obserwuj trendy, porównuj sytuację różnych krajów i regionów"
   }
 }
