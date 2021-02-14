@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { async, TestBed } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
@@ -18,22 +18,24 @@ import { AppComponent } from './app.component';
 class MockDashboardComponent {}
 
 describe('AppComponent', () => {
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule,
-        NgcCookieConsentModule.forRoot({} as NgcCookieConsentConfig),
-        TranslateTestingModule.withTranslations('en', require('../assets/i18n/en.json')).withDefaultLanguage('en'),
-        MatIconModule,
-        MatListModule,
-        MatToolbarModule,
-        MatSelectModule,
-        MatSidenavModule,
-        NoopAnimationsModule,
-      ],
-      declarations: [AppComponent, MockDashboardComponent],
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [
+          RouterTestingModule,
+          NgcCookieConsentModule.forRoot({} as NgcCookieConsentConfig),
+          TranslateTestingModule.withTranslations('en', require('../assets/i18n/en.json')).withDefaultLanguage('en'),
+          MatIconModule,
+          MatListModule,
+          MatToolbarModule,
+          MatSelectModule,
+          MatSidenavModule,
+          NoopAnimationsModule,
+        ],
+        declarations: [AppComponent, MockDashboardComponent],
+      }).compileComponents();
+    })
+  );
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);

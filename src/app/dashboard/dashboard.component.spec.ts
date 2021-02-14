@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -24,37 +24,39 @@ describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        TranslateTestingModule.withTranslations('en', require('../../assets/i18n/en.json')).withDefaultLanguage('en'),
-        MatCheckboxModule,
-        MatSelectModule,
-        MatFormFieldModule,
-        NgxChartsModule,
-        MatInputModule,
-        MatTableModule,
-        MatCardModule,
-        MatSortModule,
-        MatPaginatorModule,
-        MatTabsModule,
-        MatSelectModule,
-        MatFormFieldModule,
-        BrowserAnimationsModule,
-        RouterTestingModule,
-      ],
-      declarations: [DashboardComponent, ChartAreaComponent],
-      providers: [
-        DataService,
-        Ng2ConverterService,
-        Papa,
-        { provide: TimeSeriesProvider, useValue: jasmine.createSpyObj('TimeSeriesProvider', ['getTimeSeries']) },
-      ],
-    }).compileComponents();
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [
+          TranslateTestingModule.withTranslations('en', require('../../assets/i18n/en.json')).withDefaultLanguage('en'),
+          MatCheckboxModule,
+          MatSelectModule,
+          MatFormFieldModule,
+          NgxChartsModule,
+          MatInputModule,
+          MatTableModule,
+          MatCardModule,
+          MatSortModule,
+          MatPaginatorModule,
+          MatTabsModule,
+          MatSelectModule,
+          MatFormFieldModule,
+          BrowserAnimationsModule,
+          RouterTestingModule,
+        ],
+        declarations: [DashboardComponent, ChartAreaComponent],
+        providers: [
+          DataService,
+          Ng2ConverterService,
+          Papa,
+          { provide: TimeSeriesProvider, useValue: jasmine.createSpyObj('TimeSeriesProvider', ['getTimeSeries']) },
+        ],
+      }).compileComponents();
 
-    const timeSeriesProvider = TestBed.inject(TimeSeriesProvider) as jasmine.SpyObj<TimeSeriesProvider>;
-    timeSeriesProvider.getTimeSeries.and.returnValue(NEVER);
-  }));
+      const timeSeriesProvider = TestBed.inject(TimeSeriesProvider) as jasmine.SpyObj<TimeSeriesProvider>;
+      timeSeriesProvider.getTimeSeries.and.returnValue(NEVER);
+    })
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(DashboardComponent);

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { TranslateTestingModule } from 'ngx-translate-testing';
 import { ChartAreaComponent } from './chart-area.component';
 
@@ -6,16 +6,18 @@ describe('ChartAreaComponent', () => {
   let component: ChartAreaComponent;
   let fixture: ComponentFixture<ChartAreaComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        TranslateTestingModule.withTranslations('en', require('../../../assets/i18n/en.json')).withDefaultLanguage(
-          'en'
-        ),
-      ],
-      declarations: [ChartAreaComponent],
-    }).compileComponents();
-  }));
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        imports: [
+          TranslateTestingModule.withTranslations('en', require('../../../assets/i18n/en.json')).withDefaultLanguage(
+            'en'
+          ),
+        ],
+        declarations: [ChartAreaComponent],
+      }).compileComponents();
+    })
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ChartAreaComponent);
