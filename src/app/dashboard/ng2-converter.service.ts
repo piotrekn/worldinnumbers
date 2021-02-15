@@ -54,9 +54,9 @@ export class Ng2ConverterService {
     };
 
     return [
-      localMap(timeSeries.cssc.confirmed, DataType.Confirmed),
-      localMap(timeSeries.cssc.deaths, DataType.Deaths),
-      localMap(timeSeries.cssc.recovered, DataType.Recovered),
+      localMap(timeSeries.cssc.confirmed, DataType.confirmed),
+      localMap(timeSeries.cssc.deaths, DataType.deaths),
+      localMap(timeSeries.cssc.recovered, DataType.recovered),
     ];
   }
 }

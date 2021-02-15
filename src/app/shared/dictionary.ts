@@ -7,6 +7,8 @@ export interface Entity<T> {
   keys: string[];
 }
 
+/* eslint-disable */
 export function EMPTY_ENTITY<T>(): Entity<T> {
   return { dictionary: {}, keys: [] };
 }
+/* eslint-enable */

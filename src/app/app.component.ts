@@ -74,6 +74,10 @@ export class AppComponent implements OnDestroy, OnInit {
     this.updateTags();
   }
 
+  ngOnDestroy(): void {
+    throw new Error('Method not implemented.');
+  }
+
   private getLanguage() {
     return localStorage.getItem(`${environment.domain}.language`) ?? this.translateService.getBrowserLang();
   }
@@ -93,9 +97,5 @@ export class AppComponent implements OnDestroy, OnInit {
       this.metaService.updateTag(tags[0]);
       this.metaService.updateTag(tags[1]);
     });
-  }
-
-  ngOnDestroy(): void {
-    throw new Error('Method not implemented.');
   }
 }

@@ -48,9 +48,9 @@ describe('Ng2ConverterService', () => {
     expect(data).toEqual(expectedArray);
   });
 
-  function addDays(date: Date, days: number) {
+  const addDays = (date: Date, days: number) => {
     const result = new Date(date);
     result.setDate(result.getDate() + days);
     return result;
-  }
+  };
 });

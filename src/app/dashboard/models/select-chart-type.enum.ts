@@ -1,4 +1,4 @@
 export enum SelectChartType {
-  Stacked = 'Stacked',
-  Linear = 'Linear',
+  stacked = 'Stacked',
+  linear = 'Linear',
 }

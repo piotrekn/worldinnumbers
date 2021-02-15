@@ -1,4 +1,4 @@
 export enum ValueType {
-  Total = 'Total',
-  Daily = 'Daily',
+  total = 'Total',
+  daily = 'Daily',
 }

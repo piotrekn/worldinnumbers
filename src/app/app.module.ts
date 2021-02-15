@@ -53,10 +53,12 @@ const cookieConfig: NgcCookieConsentConfig = {
   type: 'info',
 };
 
+/* eslint-disable */
 // AoT requires an exported function for factories
-export function HttpLoaderFactory(http: HttpClient) {
+export function httpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
 }
+/* eslint-enable */
 
 @NgModule({
   declarations: [AppComponent, DashboardComponent, ChartAreaComponent, AboutComponent, CsseDashboardComponent],
@@ -65,7 +67,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
+        useFactory: httpLoaderFactory,
         deps: [HttpClient],
       },
       defaultLanguage: 'en',

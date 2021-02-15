@@ -78,7 +78,7 @@ export class TableRow {
 }
 
 export enum DataType {
-  Confirmed = 0,
-  Deaths,
-  Recovered,
+  confirmed = 0,
+  deaths,
+  recovered,
 }

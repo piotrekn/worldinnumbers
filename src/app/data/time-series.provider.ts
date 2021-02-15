@@ -10,10 +10,6 @@ export class TimeSeriesProvider {
 
   constructor(private httpClient: HttpClient) {}
 
-  private load(path: string): Observable<string> {
-    return this.httpClient.get(path, { responseType: 'text' }).pipe(first());
-  }
-
   getTimeSeries(): Observable<TimeSeriesSource> {
     if (this.state) {
       return this.state;
@@ -39,5 +35,9 @@ export class TimeSeriesProvider {
     );
 
     return this.state;
+  }
+
+  private load(path: string): Observable<string> {
+    return this.httpClient.get(path, { responseType: 'text' }).pipe(first());
   }
 }

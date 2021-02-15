@@ -1,5 +1,5 @@
 export enum SelectedDataType {
-  Confirmed = 0,
-  Deaths,
-  Recovered,
+  confirmed = 0,
+  deaths,
+  recovered,
 }

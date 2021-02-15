@@ -24,7 +24,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
   @ViewChild(MatPaginator, { static: false }) paginator: MatPaginator;
 
-  selectedDataType = SelectedDataType.Confirmed;
+  selectedDataType = SelectedDataType.confirmed;
 
   matDataSource: MatTableDataSource<TableRow>;
   dataSource: TableRow[];
@@ -32,12 +32,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   matDataSource$: Observable<MatTableDataSource<TableRow>>;
   selection = new SelectionModel<TableRow>(true, []);
   displayedColumns: string[] = ['select', 'country', 'confirmed', 'deaths', 'recovered'];
-  private selectedCountries$ = new BehaviorSubject<TableRow[]>([]);
-  private selectedCountriesNames$ = new BehaviorSubject<Entity<boolean>>(EMPTY_ENTITY());
-  valuesType$ = new BehaviorSubject<ValueType>(ValueType.Daily);
+  valuesType$ = new BehaviorSubject<ValueType>(ValueType.daily);
 
-  selectChartType = SelectChartType.Linear;
-  valuesType = ValueType.Daily;
+  selectChartType = SelectChartType.linear;
+  valuesType = ValueType.daily;
   charts: {
     ngx?: {
       countries$: Observable<NgxChart<NgxValue>[]>;
@@ -46,7 +44,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private subscriptions: Subscription[] = [];
 
+  private selectedCountries$ = new BehaviorSubject<TableRow[]>([]);
+  private selectedCountriesNames$ = new BehaviorSubject<Entity<boolean>>(EMPTY_ENTITY());
+
+  /* eslint-disable */
   Enums = { ValueType, SelectChartType, SelectedDataType };
+  /* eslint-enable */
 
   constructor(
     private dataService: DataService,
@@ -83,7 +86,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
           )
 
           .map((d) => {
-            if (valuesType === ValueType.Total) {
+            if (valuesType === ValueType.total) {
               return d;
             }
             return { ...d, multi: this.mapValueType(d, valuesType) };
@@ -213,8 +216,37 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected(dataSource: MatTableDataSource<TableRow>) {
+    const selectedCount = this.selection.selected.length;
+    const rowsCount = dataSource?.data?.length ?? 0;
+    return selectedCount === rowsCount;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle(dataSource: DataSource<TableRow>) {
+    const matDataSource = dataSource as MatTableDataSource<TableRow>;
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    this.isAllSelected(matDataSource)
+      ? this.selection.clear()
+      : matDataSource.data.forEach((row) => this.selection.select(row));
+  }
+
+  /** The label for the checkbox on the passed row */
+  checkboxLabel(dataSource: MatTableDataSource<TableRow>, row?: TableRow): string {
+    if (!row) {
+      return `${this.isAllSelected(dataSource) ? 'select' : 'deselect'} all`;
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.country}`;
+  }
+
+  applyFilter(dataSource: MatTableDataSource<TableRow>, event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
   private mapValueType(d: NgxChart<NgxValue>, valueType: ValueType): NgxValue[] {
-    return valueType === ValueType.Daily
+    return valueType === ValueType.daily
       ? d.multi.map((v) => ({
           ...v,
           series: v.series.map((s, i, arr) => ({ ...s, value: s.value - arr[i - 1]?.value || 0 })),
@@ -233,33 +265,5 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private filterChartData(values: { country?: string }[], selectedCountries: Entity<boolean>) {
     return values.filter((x) => selectedCountries.dictionary[x.country]);
-  }
-
-  /** Whether the number of selected elements matches the total number of rows. */
-  isAllSelected(dataSource: MatTableDataSource<TableRow>) {
-    const selectedCount = this.selection.selected.length;
-    const rowsCount = dataSource?.data?.length ?? 0;
-    return selectedCount === rowsCount;
-  }
-
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle(dataSource: DataSource<TableRow>) {
-    const matDataSource = dataSource as MatTableDataSource<TableRow>;
-    this.isAllSelected(matDataSource)
-      ? this.selection.clear()
-      : matDataSource.data.forEach((row) => this.selection.select(row));
-  }
-
-  /** The label for the checkbox on the passed row */
-  checkboxLabel(dataSource: MatTableDataSource<TableRow>, row?: TableRow): string {
-    if (!row) {
-      return `${this.isAllSelected(dataSource) ? 'select' : 'deselect'} all`;
-    }
-    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.country}`;
-  }
-
-  applyFilter(dataSource: MatTableDataSource<TableRow>, event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    dataSource.filter = filterValue.trim().toLowerCase();
   }
 }

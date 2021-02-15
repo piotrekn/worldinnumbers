@@ -58,10 +58,10 @@
         <mat-form-field class="field-small-margin flex-12auto">
           <mat-label>{{ 'text.ChartType' | translate }}</mat-label>
           <mat-select [(value)]="selectChartType">
-            <mat-option [value]="Enums.SelectChartType.Linear">{{
+            <mat-option [value]="Enums.SelectChartType.linear">{{
               'Enums.SelectChartType.Linear' | translate
             }}</mat-option>
-            <mat-option [value]="Enums.SelectChartType.Stacked">{{
+            <mat-option [value]="Enums.SelectChartType.stacked">{{
               'Enums.SelectChartType.Stacked' | translate
             }}</mat-option>
           </mat-select>
@@ -69,8 +69,8 @@
         <mat-form-field class="field-small-margin flex-12auto">
           <mat-label>{{ 'text.ShowDailyValues' | translate }}</mat-label>
           <mat-select [value]="valuesType" (valueChange)="valuesType$.next($event)">
-            <mat-option [value]="Enums.ValueType.Daily" default>{{ 'text.Yes' | translate }}</mat-option>
-            <mat-option [value]="Enums.ValueType.Total">{{ 'text.No' | translate }}</mat-option>
+            <mat-option [value]="Enums.ValueType.daily" default>{{ 'text.Yes' | translate }}</mat-option>
+            <mat-option [value]="Enums.ValueType.total">{{ 'text.No' | translate }}</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
@@ -89,7 +89,7 @@
             *ngTemplateOutlet="
               chartArea;
               context: {
-                dataSeries: Enums.SelectedDataType.Confirmed,
+                dataSeries: Enums.SelectedDataType.confirmed,
                 chartType: selectChartType,
                 countries$: charts.ngx.countries$
               }
@@ -103,7 +103,7 @@
             *ngTemplateOutlet="
               chartArea;
               context: {
-                dataSeries: Enums.SelectedDataType.Deaths,
+                dataSeries: Enums.SelectedDataType.deaths,
                 chartType: selectChartType,
                 countries$: charts.ngx.countries$
               }
@@ -117,7 +117,7 @@
             *ngTemplateOutlet="
               chartArea;
               context: {
-                dataSeries: Enums.SelectedDataType.Recovered,
+                dataSeries: Enums.SelectedDataType.recovered,
                 chartType: selectChartType,
                 countries$: charts.ngx.countries$
               }

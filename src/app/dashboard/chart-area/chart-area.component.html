@@ -1,6 +1,6 @@
 <div *ngIf="countriesValue$ | async as countries; else noData" class="chart-container" [ngSwitch]="chartType">
   <ngx-charts-area-chart-stacked
-    *ngSwitchCase="Enums.SelectChartType.Stacked"
+    *ngSwitchCase="Enums.SelectChartType.stacked"
     (window:resize)="onResize($event)"
     [scheme]="countries.colorScheme"
     [legend]="countries.legend"
@@ -18,7 +18,7 @@
   >
   </ngx-charts-area-chart-stacked>
   <ngx-charts-line-chart
-    *ngSwitchCase="Enums.SelectChartType.Linear"
+    *ngSwitchCase="Enums.SelectChartType.linear"
     (window:resize)="onResize($event)"
     [scheme]="countries.colorScheme"
     [legend]="countries.legend"
