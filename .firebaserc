@@ -5,8 +5,11 @@
   "targets": {
     "covid-numbers": {
       "hosting": {
-        "covid-numbers": [
+        "production": [
           "covid-numbers"
+        ],
+        "staging": [
+          "covid-numbers-staging"
         ]
       }
     }

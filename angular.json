@@ -22,11 +22,16 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            "aot": true,
             "assets": ["src/favicon.ico", "src/assets", "src/robots.txt"],
             "styles": ["src/styles.scss", "./node_modules/cookieconsent/build/cookieconsent.min.css"],
             "scripts": ["./node_modules/cookieconsent/build/cookieconsent.min.js"],
-            "allowedCommonJsDependencies": ["papaparse"]
+            "allowedCommonJsDependencies": ["papaparse"],
+            "vendorChunk": true,
+            "extractLicenses": false,
+            "buildOptimizer": false,
+            "sourceMap": true,
+            "optimization": false,
+            "namedChunks": true
           },
           "configurations": {
             "production": {
@@ -34,6 +39,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                },
+                {
+                  "replace": "src/environments/firebase.config.ts",
+                  "with": "src/environments/firebase.config.prod.ts"
                 }
               ],
               "optimization": true,
@@ -55,19 +64,58 @@
                   "maximumError": "10kb"
                 }
               ]
-            }
-          }
+            },
+            "staging": {
+              "outputPath": "public/covid-numbers-staging",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                },
+                {
+                  "replace": "src/environments/firebase.config.ts",
+                  "with": "src/environments/firebase.config.staging.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            },
+            "development": {}
+          },
+          "defaultConfiguration": "production"
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "covid-numbers:build"
-          },
+          "options": {},
           "configurations": {
             "production": {
               "browserTarget": "covid-numbers:build:production"
+            },
+            "development": {
+              "browserTarget": "covid-numbers:build:development"
+            },
+            "staging": {
+              "browserTarget": "covid-numbers:build:staging"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -103,14 +151,20 @@
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
-            "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "covid-numbers:serve"
+            "protractorConfig": "e2e/protractor.conf.js"
           },
           "configurations": {
             "production": {
               "devServerTarget": "covid-numbers:serve:production"
+            },
+            "development": {
+              "devServerTarget": "covid-numbers:serve:development"
+            },
+            "staging": {
+              "devServerTarget": "covid-numbers:build:staging"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         },
         "deploy": {
           "builder": "@angular/fire:deploy",

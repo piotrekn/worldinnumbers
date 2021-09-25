@@ -9,8 +9,19 @@
   },
   "hosting": [
     {
-      "target": "covid-numbers",
+      "target": "production",
       "public": "public/covid-numbers",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "staging",
+      "public": "public/covid-numbers-staging",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {

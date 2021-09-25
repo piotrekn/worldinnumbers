@@ -7,7 +7,7 @@ import { NgcCookieConsentService } from 'ngx-cookieconsent';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { version } from '../../package.json';
+import packageInfo from '../../package.json';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +16,7 @@ import { version } from '../../package.json';
 })
 export class AppComponent extends RxjsOnDestroy implements OnDestroy, OnInit {
   title = 'World in numbers';
-  version = version;
+  version = packageInfo.version;
   language: string;
   languages = ['en', 'pl'];
 
