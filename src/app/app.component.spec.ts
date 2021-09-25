@@ -7,15 +7,18 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
+import '@pn/ng-rxjs-safe-subscribe';
+import { RxjsOnDestroy } from 'ng-rxjs-safe-subscribe';
 import { NgcCookieConsentConfig, NgcCookieConsentModule } from 'ngx-cookieconsent';
 import { TranslateTestingModule } from 'ngx-translate-testing';
+import { Subject } from 'rxjs';
 import { AppComponent } from './app.component';
 
 @Component({
   selector: 'app-dashboard',
   template: '<p>Mock Dashboard Component</p>',
 })
-class MockDashboardComponent {}
+class MockDashboardComponent extends RxjsOnDestroy {}
 
 describe('AppComponent', () => {
   beforeEach(
@@ -36,6 +39,28 @@ describe('AppComponent', () => {
       }).compileComponents();
     })
   );
+
+  it('should use RxjsOnDestroy feature', () => {
+    const component = new MockDashboardComponent();
+
+    let count = 0;
+    const subject = new Subject<number>();
+    subject.subscribeSafely(component, () => {
+      count++;
+    });
+
+    // start point
+    expect(count).toBe(0);
+    subject.next(10);
+    expect(count).toBe(1);
+
+    // destroy parent and cancel observable
+    component.ngOnDestroy();
+
+    // next value should not be triggered
+    subject.next(10);
+    expect(count).toBe(1);
+  });
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);

@@ -1,8 +1,8 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Meta } from '@angular/platform-browser';
-import '@mszewcz/safe-subscribe';
 import { TranslateService } from '@ngx-translate/core';
+import { RxjsOnDestroy } from 'ng-rxjs-safe-subscribe';
 import { NgcCookieConsentService } from 'ngx-cookieconsent';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
@@ -14,7 +14,7 @@ import { version } from '../../package.json';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnDestroy, OnInit {
+export class AppComponent extends RxjsOnDestroy implements OnDestroy, OnInit {
   title = 'World in numbers';
   version = version;
   language: string;
@@ -30,7 +30,9 @@ export class AppComponent implements OnDestroy, OnInit {
     private translateService: TranslateService,
     private breakpointObserver: BreakpointObserver,
     private metaService: Meta
-  ) {}
+  ) {
+    super();
+  }
 
   ngOnInit() {
     this.translateService.addLangs(this.languages);
@@ -47,7 +49,7 @@ export class AppComponent implements OnDestroy, OnInit {
         'cookie.link',
         'cookie.policy',
       ])
-      .safeSubscribe(this, (data) => {
+      .subscribeSafely(this, (data) => {
         this.ccService.getConfig().content = this.ccService.getConfig().content || {};
         // Override default messages with the translated ones
         this.ccService.getConfig().content.header = data['cookie.header'];
@@ -74,10 +76,6 @@ export class AppComponent implements OnDestroy, OnInit {
     this.updateTags();
   }
 
-  ngOnDestroy(): void {
-    throw new Error('Method not implemented.');
-  }
-
   private getLanguage() {
     return localStorage.getItem(`${environment.domain}.language`) ?? this.translateService.getBrowserLang();
   }
@@ -87,13 +85,11 @@ export class AppComponent implements OnDestroy, OnInit {
   }
 
   private updateTags() {
-    this.translateService.get(['tags.keywords', 'tags.description']).safeSubscribe(this, (data) => {
+    this.translateService.get(['tags.keywords', 'tags.description']).subscribeSafely(this, (data) => {
       const tags = [
         { name: 'keywords', content: data['tags.keywords'] },
         { name: 'description', content: data['tags.description'] },
       ];
-      console.log(tags);
-      // this.metaService.addTags(tags);
       this.metaService.updateTag(tags[0]);
       this.metaService.updateTag(tags[1]);
     });
