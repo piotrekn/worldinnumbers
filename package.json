@@ -1,6 +1,6 @@
 {
   "name": "covid-numbers",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -15,12 +15,11 @@
     "install-build-all": "npm run build --prefix ./functions & npm run build --configuration development",
     "ib-all": "npm run install-build-all",
     "emulate": "firebase emulators:start --only functions,firestore,hosting",
+    "release": "standard-version -a",
+    "release-dry": "standard-version -a --dry-run",
     "deploy": "ng build --configuration production & firebase deploy --only hosting",
     "deploy-staging": "ng build --configuration staging & firebase deploy --only hosting:staging",
-    "deployall": "firebase deploy",
-    "postdeploy": "npm run release",
-    "release": "standard-version -a",
-    "release-dry": "standard-version -a --dry-run"
+    "deployall": "firebase deploy"
   },
   "private": true,
   "dependencies": {
